@@ -1,8 +1,36 @@
-<div class="login-container">
-  <h2>Iniciar sesión</h2>
-  <form (ngSubmit)="onLogin()">
-    <input type="text" [(ngModel)]="user" name="user" placeholder="Usuario" required>
-    <input type="password" [(ngModel)]="pasword" name="pasword" placeholder="Contraseña" required>
-    <button type="submit">Entrar</button>
-  </form>
-</div>
+  <div class="flex items-center justify-center min-h-screen bg-opacity-50 
+    bg-center bg-cover bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470')">
+    <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+      <h2 class="text-2xl font-bold text-center mb-4">Welcome to the website</h2>
+      <p class="text-sm text-gray-600 text-center mb-6">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+      </p>
+      <form (ngSubmit)="onLogin()"class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Email or Username</label>
+          <input 
+          type="text" [(ngModel)]="user" name="user" placeholder="Usuario" required
+          class="mt-1 block w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Password</label>
+          <input 
+          type="password" [(ngModel)]="pasword" name="pasword" placeholder="Contraseña" required
+          class="mt-1 block w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="flex items-center justify-between text-sm">
+          <label class="flex items-center">
+            <input type="checkbox" class="mr-2" />
+            Remember
+          </label>
+          <a href="#" class="text-blue-500 hover:underline">Forgot password?</a>
+        </div>
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+          LOGIN
+        </button>
+      </form>
+      <p class="text-center text-sm text-gray-600 mt-4">
+        <a href="#" class="text-blue-500 hover:underline">Create Account</a>
+      </p>
+    </div>
+  </div>
