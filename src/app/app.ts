@@ -1,15 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule, RouterOutlet } from '@angular/router';
-import { routes } from './app.routes';
+import {  RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [
     RouterOutlet,
-    //BrowserModule,
-    //RouterModule.forRoot([routes]),
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

@@ -9,7 +9,7 @@
   >
   <svg class="w-6 h-6" aria-hidden="true" fill="currentColor">
     <use href="assets/sprite.svg#icon-menu"></use>
-  </svg> 
+  </svg>
 </div>
 <!-- Sidebar -->
 <aside 
@@ -19,11 +19,14 @@ class="fixed top-0 left-0 z-40 w-64 h-screen bg-white border-r border-gray-200 d
   <div class="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
       <ul class="space-y-2">
           <li>
-              <p href="#" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-              <svg aria-hidden="true" class="w-6 h-6 text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor">
+              <p href="#" class="flex flex-col items-center text-base font-normal text-gray-900 rounded-lg dark:text-white  group">
+              <span class="ml-3 text-2xl pb-4">Sistema Comercial</span>
+              <svg aria-hidden="true" class="w-20 h-20 text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor">
                 <use href="assets/sprite.svg#icon-user"></use>
               </svg>
-              <span class="ml-3">User Name</span>
+              <span class="ml-5">Bienbenido</span>
+              <span class="ml-5">{{userName()}}</span>
+              <span class="ml-5">({{userRole()}})</span>
             </p>
           </li>
           <li>
@@ -49,13 +52,10 @@ class="fixed top-0 left-0 z-40 w-64 h-screen bg-white border-r border-gray-200 d
               [style.maxHeight]="isTdinicio ? '500px' : '0px'"
             >
                 <li>
-                    <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Inicio</a>
+                    <a routerLink="homepage" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Resumen General</a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Configuracion</a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Acualizacion de Datos</a>
+                    <a routerLink="update" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Ultimas Actualizaciones</a>
                 </li>
             </ul>
           </li>
@@ -83,57 +83,147 @@ class="fixed top-0 left-0 z-40 w-64 h-screen bg-white border-r border-gray-200 d
                 [style.maxHeight]="isTdprogramacion ? '500px' : '0px'"
               >
                       <li>
-                          <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Products</a>
+                          <a routerLink="taskpage" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Subir tareo</a>
                       </li>
                       <li>
-                          <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Billing</a>
+                          <a routerLink="monitoringpage" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Mapa de monitoreo</a>
                       </li>
                       <li>
-                          <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Invoice</a>
+                          <a routerLink="historypage" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Historial de tareo</a>
                       </li>
               </ul>
           </li>
           <li>
-              <a href="#" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                  <svg aria-hidden="true" class="w-6 h-6 text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"></path><path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"></path></svg>
-                  <span class="flex-1 ml-3 whitespace-nowrap">Reportes</span>
-                  <span class="inline-flex justify-center items-center w-5 h-5 text-xs font-semibold rounded-full text-primary-800 bg-primary-100 dark:bg-primary-200 dark:text-primary-800">
-                      6   
-                  </span>
-              </a>
+            <button type="button" 
+                (click)="tdReportes()" 
+                class="flex items-center 
+                p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group 
+                hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                  <svg aria-hidden="true" class=" w-6 h-6 
+                  text-gray-400 transition duration-75 group-hover:text-gray-900 
+                  dark:text-gray-400 dark:group-hover:text-white" 
+                  fill="currentColor">
+                  <use href="assets/sprite.svg#icon-report"></use>  
+                  </svg>
+                  <span class="flex-1 ml-3 text-left whitespace-nowrap">Reportes</span>
+                  <svg aria-hidden="true" class="w-6 h-6 transition-transform duration-300"
+                    [class.rotate-180]="isTdreportes"
+                    fill="currentColor">
+                    <use href="assets/sprite.svg#icon-arrow-down"></use>
+                  </svg>
+              </button>
+              <ul 
+                class="overflow-hidden transition-all duration-300 p-0 space-y-2"
+                [style.maxHeight]="isTdreportes ? '500px' : '0px'"
+              >
+                      <li>
+                          <a routerLink="reportspage" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Estado de ejecucion</a>
+                      </li>
+                      <li>
+                          <a routerLink="exportspage" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Exportar datos</a>
+                      </li>
+              </ul>
           </li>
           <li>
-              <button type="button" class="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-authentication" data-collapse-toggle="dropdown-authentication">
-                  <svg aria-hidden="true" class="w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+            <button type="button" 
+                (click)="tdPerfil()" 
+                class="flex items-center 
+                p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group 
+                hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                  <svg aria-hidden="true" class=" w-6 h-6 
+                  text-gray-400 transition duration-75 group-hover:text-gray-900 
+                  dark:text-gray-400 dark:group-hover:text-white" 
+                  fill="currentColor">
+                  <use href="assets/sprite.svg#icon-user"></use>  
+                  </svg>
                   <span class="flex-1 ml-3 text-left whitespace-nowrap">Perfil</span>
-                  <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                  <svg aria-hidden="true" class="w-6 h-6 transition-transform duration-300"
+                    [class.rotate-180]="isTdperfil"
+                    fill="currentColor">
+                    <use href="assets/sprite.svg#icon-arrow-down"></use>
+                  </svg>
               </button>
-              <ul id="dropdown-authentication" class="hidden py-2 space-y-2"
-              
-              
+              <ul 
+                class="overflow-hidden transition-all duration-300 p-0 space-y-2"
+                [style.maxHeight]="isTdperfil ? '500px' : '0px'"
               >
-                  <li>
-                      <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Sign In</a>
-                  </li>
-                  <li>
-                      <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Sign Up</a>
-                  </li>
-                  <li>
-                      <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Forgot Password</a>
-                  </li>
+                      <li>
+                          <a routerLink="perfilpage" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Datos personales</a>
+                      </li>
+                      <li>
+                          <a routerLink="updateuser" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Cambiar contraseña</a>
+                      </li>
               </ul>
           </li>
       </ul>
       <ul class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700">
         <li>
-            <a href="#" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg transition duration-75 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white group">
-                <svg 
-                  aria-hidden="true" class="w-6 h-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" fill="currentColor" >
-                  <use href="assets/sprite.svg#icon-help-circle"></use>
-                </svg>
-                <span class="ml-3">Ayuda</span>
-            </a>
-        </li>
+            <button type="button" 
+                (click)="tdAyuda()" 
+                class="flex items-center 
+                p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group 
+                hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                  <svg aria-hidden="true" class=" w-6 h-6 
+                  text-gray-400 transition duration-75 group-hover:text-gray-900 
+                  dark:text-gray-400 dark:group-hover:text-white" 
+                  fill="currentColor">
+                  <use href="assets/sprite.svg#icon-help"></use>  
+                  </svg>
+                  <span class="flex-1 ml-3 text-left whitespace-nowrap">Ayuda</span>
+                  <svg aria-hidden="true" class="w-6 h-6 transition-transform duration-300"
+                    [class.rotate-180]="isTdAyuda"
+                    fill="currentColor">
+                    <use href="assets/sprite.svg#icon-arrow-down"></use>
+                  </svg>
+              </button>
+              <ul 
+                class="overflow-hidden transition-all duration-300 p-0 space-y-2"
+                [style.maxHeight]="isTdAyuda ? '500px' : '0px'"
+              >
+                      <li>
+                          <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Preguntas frecuentes</a>
+                      </li>
+                      <li>
+                          <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Contacto Soporte</a>
+                      </li>
+              </ul>
+          </li>
+          <li>
+            <button type="button" 
+                (click)="tdConfi()" 
+                class="flex items-center 
+                p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group 
+                hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                  <svg aria-hidden="true" class=" w-6 h-6 
+                  text-gray-400 transition duration-75 group-hover:text-gray-900 
+                  dark:text-gray-400 dark:group-hover:text-white" 
+                  fill="currentColor">
+                  <use href="assets/sprite.svg#icon-config"></use>  
+                  </svg>
+                  
+                  <span class="flex-1 ml-3 text-left whitespace-nowrap">Configuración</span>
+                  <svg aria-hidden="true" class="w-6 h-6 transition-transform duration-300"
+                    [class.rotate-180]="isTdconfi"
+                    fill="currentColor">
+                    <use href="assets/sprite.svg#icon-arrow-down"></use>
+                  </svg>
+              </button>
+              <ul 
+                class="overflow-hidden transition-all duration-300 p-0 space-y-2"
+                [style.maxHeight]="isTdconfi ? '500px' : '0px'"
+              >
+                      <li>
+                          <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Usuarios</a>
+                      </li>
+                      <li>
+                          <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Roles y permisos</a>
+                      </li>
+                      <li>
+                          <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Parametros de sistema</a>
+                      </li>
+              </ul>
+          </li>
+
       </ul>
   </div>
   <div class="hidden absolute bottom-0 left-0 justify-center p-4 space-x-4 w-full lg:flex bg-white dark:bg-gray-800 z-20 border-r border-gray-200 dark:border-gray-700">
