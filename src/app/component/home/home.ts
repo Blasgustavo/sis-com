@@ -1,8 +1,6 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { RouterOutlet, RouterLinkWithHref } from '@angular/router';
 import { UserService, UserData } from '../../service/user.service';
-import { Observable } from 'rxjs';
-import { NgIf, AsyncPipe} from '@angular/common'
 
 @Component({
   selector: 'app-home',
