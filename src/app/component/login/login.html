@@ -1,36 +1,89 @@
-  <div class="flex items-center justify-center min-h-screen bg-opacity-50 
-    bg-center bg-cover bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470')">
-    <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-      <h2 class="text-2xl font-bold text-center mb-4">Welcome to the website</h2>
-      <p class="text-sm text-gray-600 text-center mb-6">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+<!-- Estamos usando Tailwind y DaisyUI-->
+<div class="flex items-center justify-center h-screen">
+  <div class="card w-96 bg-base-100 shadow-sm">
+    <div class="card-body">
+      <h2 class="text-3xl font-bold text-center">Iniciar Sesion</h2>
+      <p class="text-sm text-gray-600 text-center">
+        Ingrese sus datos tiene 3 intentos, antes de que el usuario se bloque.
       </p>
-      <form (ngSubmit)="onLogin()"class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Email or Username</label>
-          <input 
-          type="text" [(ngModel)]="user" name="user" placeholder="Usuario" required
-          class="mt-1 block w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Password</label>
-          <input 
-          type="password" [(ngModel)]="pasword" name="pasword" placeholder="Contraseña" required
-          class="mt-1 block w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-        <div class="flex items-center justify-between text-sm">
-          <label class="flex items-center">
-            <input type="checkbox" class="mr-2" />
-            Remember
+      <form (ngSubmit)="onLogin()"class="">
+        <div class="flex flex-col">
+          <span class="block text-base font-medium text-gray-700 mb-5 ">Usuario:</span>        
+          <!-- -->
+          <label class="input validator input-primary rounded-sm">
+            <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <g
+                stroke-linejoin="round"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </g>
+            </svg>
+            <input
+              type="text"
+              required
+              placeholder="Username"
+              pattern="[A-Za-z][A-Za-z0-9\-]*"
+              minlength="3"
+              maxlength="30"
+              title="Only letters, numbers or dash"
+              [(ngModel)]="user" name="user" placeholder="Usuario" required
+            />
           </label>
-          <a href="#" class="text-blue-500 hover:underline">Forgot password?</a>
+          <p class="validator-hint h-1 mb-1 text-center">
+            Ingrese un valor valido.
+          </p>
         </div>
-        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
-          LOGIN
-        </button>
+        <div>
+          <span class="block text-base font-medium text-gray-700 mt-4 mb-5">Contraseña:</span>
+          <!-- -->
+          <label class="input validator input-primary rounded-sm">
+            <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <g
+                stroke-linejoin="round"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"
+                ></path>
+                <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
+              </g>
+            </svg>
+            <input
+              type="password"
+              required
+              placeholder="Password"
+              minlength="8"
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+              [(ngModel)]="pasword" name="pasword" placeholder="Contraseña" required
+            />
+          </label>
+          <p class="validator-hint h-1 m-1 text-center">
+            Ingrese un valor valido.
+          </p>
+        </div>
+
+        <div class="flex justify-center m-5">
+          <label class="flex gap-3">
+              <span>Recordar Datos</span>
+              <input type="checkbox" id="rememberData" checked class="checkbox checkbox-success" />
+            </label>
+        </div>
+        <div class="mb-5">
+          <button type="submit" class="btn btn-primary rounded-sm w-xs ">INGRESAR</button>
+        </div>
+        <div>
+          <button class="btn btn-ghost rounded-sm w-xs" type="reset">limpiar datos ingresados</button>
+        </div>
       </form>
-      <p class="text-center text-sm text-gray-600 mt-4">
-        <a href="#" class="text-blue-500 hover:underline">Create Account</a>
-      </p>
     </div>
   </div>
+</div>
