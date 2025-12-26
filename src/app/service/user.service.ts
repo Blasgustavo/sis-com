@@ -1,12 +1,16 @@
 import { isPlatformBrowser } from '@angular/common';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-export interface UserData{
+import { HttpClient } from '@angular/common/http';
+
+export interface UserData {
   id: string;
   user: string;
+  password: string;
   role: string;
+  datecreate: string;
   image: string;
   names: string;
   iat?: number;
@@ -16,51 +20,67 @@ export interface UserData{
 @Injectable({
   providedIn: 'root',
 })
-
 export class UserService {
-  private plataformId = inject(PLATFORM_ID);
+  private platformId = inject(PLATFORM_ID);
 
-  // Estado del usuario, BehaviorSubjet hace que 
-  private userSubjet = new BehaviorSubject<UserData | null>(null);
-  user$ = this.userSubjet.asObservable();
+  private userSubject = new BehaviorSubject<UserData | null>(null);
+  user$ = this.userSubject.asObservable();
 
-  constructor(){
+  constructor(private http: HttpClient) {
     this.loadUserFromToken();
   }
 
-  // Cargar el usuario desde el tooken al iniciar la app
-  private loadUserFromToken(){
-    if(!isPlatformBrowser(this.plataformId)) return;
-  
+  // Cargar usuario desde el token al iniciar la app
+  private loadUserFromToken() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     const token = localStorage.getItem('authToken');
-    if(!token) return;
-    
-    try{
-      const decoded = jwtDecode <UserData>(token);
-      this.userSubjet.next(decoded);
-    } catch (error){
-      console.error('Error al decodificar el token', error)
-      this.userSubjet.next(null);
+    if (!token) return;
+
+    try {
+      const decoded = jwtDecode<UserData>(token);
+      this.userSubject.next(decoded);
+    } catch (error) {
+      console.error('Error al decodificar el token', error);
+      this.userSubject.next(null);
     }
   }
 
-  // Obtener ussuario actual (sincrono)
+  // Obtener usuario actual (sincrónico)
   getUser(): UserData | null {
-    return this.userSubjet.value;
+    return this.userSubject.value;
   }
 
-  //Actualizar usuario manualmente
-  updateUser(data: Partial<UserData>){
-    const current = this.userSubjet.value;
-    if(!current) return;
-  
-    const update = { ...current, ...data}
-    this.userSubjet.next(update);
+  // Actualizar usuario localmente (solo frontend)
+  updateUser(data: Partial<UserData>) {
+    const current = this.userSubject.value;
+    if (!current) return;
 
+    const updated = { ...current, ...data };
+    this.userSubject.next(updated);
   }
-  //limpiar usuario al cerrar secion
-  clearUser(){
-    this.userSubjet.next(null);
+
+  updateUserByUsername(username: string, data: Partial<UserData>): Observable<UserData> {
+    return this.http.patch<UserData>(`http://localhost:3000/api/users/${username}`, 
+      data, { headers: { 'Content-Type': 'application/json' }
+    });
   }
-  
+
+
+  // Actualizar usuario en el servidor y sincronizar estado local
+  syncUserUpdate(data: Partial<UserData>) {
+    return this.http.patch<UserData>('/api/users/update', data).subscribe({
+      next: (updatedUser) => {
+        this.updateUser(updatedUser); // sincroniza frontend
+      },
+      error: (err) => {
+        console.error('Error al actualizar usuario en el servidor', err);
+      },
+    });
+  }
+
+  // Limpiar usuario al cerrar sesión
+  clearUser() {
+    this.userSubject.next(null);
+  }
 }

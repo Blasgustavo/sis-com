@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
+import { NavService } from '../../service/nav.service';
 
 @Component({
   selector: 'app-login',
@@ -12,18 +13,18 @@ import { AuthService } from '../../service/auth.service';
 export class Login {
   //Definicion de variables para el usuario y la contraseña
   user: string = '';
-  pasword: string = '';
+  password: string = '';
   //Inyeccion del router en el constructor
-  constructor(private authService: AuthService, private router:Router) {}
+  constructor(private authService: AuthService, private nav:NavService) {}
   //Metodo para manejar el evento de login
   onLogin() {
     console.log("Intentando iniciar sesion con usuario:", this.user);
-    this.authService.login(this.user, this.pasword).subscribe({
+    this.authService.login(this.user, this.password).subscribe({
       next: (response) => {
         console.log('Login exitoso:', response);
         localStorage.setItem('authToken', response.token);
         //Navegacion a la pagina Home despues del login
-        this.router.navigate(['/home']);
+        this.nav.goReplace('/home');
       },
       error: (error) => {
         console.error('Error en el login:', error);

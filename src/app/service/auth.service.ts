@@ -25,7 +25,7 @@ export class AuthService {
       pasword,
     }).pipe(tap((res: any) => {
       if(res.token){
-        if(!isPlatformBrowser(this.platformId)){
+        if(isPlatformBrowser(this.platformId)){
           localStorage.setItem('authToken', res.token);
         }
         //Cargar usuario en el Servicio
@@ -49,7 +49,16 @@ export class AuthService {
       return false;
     }
     const token = localStorage.getItem('authToken');
-    return token !== null && token !== 'undefined' && token !== '';
-  };
+    if(!token) return false;
+    //return token !== null && token !== 'undefined' && token !== '';
+
+    // Validar la expiracion de l token
+    try{
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp > Date.now()/1000;
   
+    } catch{
+      return false;
+    }
+  };
 }

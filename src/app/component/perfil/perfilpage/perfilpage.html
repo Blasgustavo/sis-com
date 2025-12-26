@@ -1,33 +1,53 @@
-<div class="flex items-center justify-center h-screen">
+<div class="flex items-center justify-center h-screen bg-base-200">
   <!-- Tarjeta de perfil -->
-  <div class="relative bg-white rounded-xl shadow-lg w-full max-w-sm px-6 py-8 z-10 text-center">
-    <!-- Botones superiores -->
+  <div class="relative bg-base-100 rounded-xl shadow-xl w-max px-8 py-10 text-center border border-base-300">
+    
+    <h2 class="text-xl font-bold text-start text-primary mb-4">
+      Información de Perfil:
+    </h2>
+
     <!-- Imagen de perfil -->
-    <img src="https://copilot.microsoft.com/th/id/BCO.99f9ebd4-c143-442a-b7e5-25a7b164415f.png" alt="Samantha Jones" class="w-50 h-50 rounded-full mx-auto border-4 border-white shadow-md mb-4">
+    <img 
+      src="https://copilot.microsoft.com/th/id/BCO.99f9ebd4-c143-442a-b7e5-25a7b164415f.png"
+      alt="Foto de perfil"
+      class="w-40 h-40 rounded-full mx-auto border-4 border-base-100 shadow-md mb-4"
+    />
 
     <!-- Información -->
-    <h2 class="text-xl font-semibold text-gray-800">{{userNames()}}</h2>
-    <p class="text-sm text-gray-500 mt-2">Usuario: {{userUser()}}</p>
-    <p class="text-sm text-gray-500 mt-2">Tipo de acceso: {{userRole()}}</p>
-    <p class="text-sm text-gray-500 mt-2">Fecha de creacion</p>
+    <h2 class="text-xl font-bold p-2 text-primary">
+      {{ userNames() }}
+    </h2>
+
+    <p class="text-sm font-bold text-neutral">Usuario:</p>
+    <p class="text-sm mt-1 text-neutral-content">{{ userUser() }}</p>
+
+    <p class="text-sm mt-3 font-bold text-neutral">Tipo de Acceso:</p>
+    <p class="text-sm mt-1 text-neutral-content">{{ userRole() }}</p>
+
+    <p class="text-sm mt-3 font-bold text-neutral">Fecha de creación:</p>
+    <p class="text-sm mt-1 mb-5 text-neutral-content">15/01/2026</p>
 
     <!-- Estadísticas -->
-    <div class="flex justify-around mt-6 text-gray-700 text-sm font-medium">
-      <div>
-        <p>65</p>
-        <p class="text-xs text-gray-500">Programado</p>
+    <div class="stats shadow bg-base-100">
+      
+      <div class="stat place-items-center">
+        <div class="stat-title">Downloads</div>
+        <div class="stat-value text-primary">31K</div>
+        <div class="stat-desc">Enero 1 - Febrero 1</div>
       </div>
-      <div>
-        <p>43</p>
-        <p class="text-xs text-gray-500">Ejecutado</p>
-      </div>
-      <div>
-        <p>21</p>
-        <p class="text-xs text-gray-500">Pendiente</p>
-      </div>
-    </div>
 
-    <!-- Botón -->
-    <button class="mt-6   px-4 py-2 text-sm font-medium text-gray-500 rounded-lg hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700">Actualizar Datos</button>
+      <div class="stat place-items-center">
+        <div class="stat-title">Users</div>
+        <div class="stat-value text-secondary">4,200</div>
+        <div class="stat-desc text-secondary">↗︎ 40 (2%)</div>
+      </div>
+
+      <div class="stat place-items-center">
+        <div class="stat-title">New Registers</div>
+        <div class="stat-value text-accent">1,200</div>
+        <div class="stat-desc text-accent">↘︎ 90 (14%)</div>
+      </div>
+
+    </div>
   </div>
 </div>

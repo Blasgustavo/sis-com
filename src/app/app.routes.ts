@@ -1,22 +1,24 @@
 import { Routes } from '@angular/router';
-import { Login } from './component/login/login';
 import { Home } from './component/home/home';
 import { AuthGuard } from './service/auth.guard';
-import { Updates } from './component/start/updates/updates';
+import { NoauthGuard } from './service/noauth.guard';
 
 export const routes: Routes = [
     //redirecciona la ruta vacia a login si no esta loggeado
     {path:'', redirectTo:'login', pathMatch:'full'},
     //ruta para el componente login
-    {path:'login', component: Login},
-    //ruta para el componente home
+    {path:'login',
+        canActivate: [NoauthGuard],
+        loadComponent: () => import('./component/login/login').then(m => m.Login)
+    },
+    //rutas para el componente home
     //protege la ruta home con el AuthGuard y solo permite el acceso si el usuario esta loggeado
     {path:'home',
         component: Home,
         canActivate: [AuthGuard],
         children: [
             //ruta hija para el modulo de usuarios
-            {path:'', redirectTo:'homepage', pathMatch:'full'},
+            //{path:'', redirectTo:'homepage', pathMatch:'full'},
             // rutas inicio
             {path:'homepage', loadComponent: () => import('./component/start/homepage/homepage').then(m => m.Homepage)},
             {path:'update', loadComponent: () => import('./component/start/updates/updates').then(m => m.Updates)},
@@ -29,9 +31,12 @@ export const routes: Routes = [
             {path:'exportspage', loadComponent: () => import('./component/reports/exportspage/exportspage').then(m => m.Exportspage)},
             //rutas perfil
             {path: 'perfilpage', loadComponent: () => import('./component/perfil/perfilpage/perfilpage').then(m => m.Perfilpage)},
-            {path: 'updateuser', loadComponent: () => import('./component/perfil/update-user/update-user').then(m => m.UpdateUser)}
+            {path: 'updateuser', loadComponent: () => import('./component/perfil/update-user/update-user').then(m => m.UpdateUser)},
+            //redirige si la ruta es errada
+            {path:'**',redirectTo:''}
+
         ]
     },
     //Redirecciiona a login si la ruta no existe
-    {path:'**', redirectTo:'login'}
+    {path:'**', redirectTo:'home'}
 ];

@@ -15,15 +15,16 @@ export class AuthGuard implements CanActivate {
   // Implementamos el método canActivate
   canActivate(): boolean {
     // SSR: no hay localStorage -> no redirigir
-    if(!isPlatformBrowser(this.plataformId)){
-      return true;
-    }
+    if(!isPlatformBrowser(this.plataformId)){return true;}
     // Lógica para verificar si el usuario está autenticado
     if(this.authService.isLoggedIn()) {
       return true; // Permitir acceso si está autenticado
-    } else {
-      this.router.navigate(['/login']); // Redirigir al login si no está autenticado
-      return false; // Bloquear acceso
     }
+    this.router.navigate(['/login']),{
+      replaceUrl: true,
+      skipLocationChange: true
+    }
+
+    return false;
   }
 }
