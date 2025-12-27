@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { Home } from './component/home/home';
-import { AuthGuard } from './service/auth.guard';
-import { NoauthGuard } from './service/noauth.guard';
+import { Home } from './features/home/home';
+import { AuthGuard } from './core/guards/auth.guard';
+import { NoauthGuard } from './core/guards/noauth.guard';
 
 export const routes: Routes = [
     //redirecciona la ruta vacia a login si no esta loggeado
@@ -9,7 +9,7 @@ export const routes: Routes = [
     //ruta para el componente login
     {path:'login',
         canActivate: [NoauthGuard],
-        loadComponent: () => import('./component/login/login').then(m => m.Login)
+        loadComponent: () => import('./features/auth/components/login').then(m => m.Login)
     },
     //rutas para el componente home
     //protege la ruta home con el AuthGuard y solo permite el acceso si el usuario esta loggeado
@@ -20,18 +20,18 @@ export const routes: Routes = [
             //ruta hija para el modulo de usuarios
             //{path:'', redirectTo:'homepage', pathMatch:'full'},
             // rutas inicio
-            {path:'homepage', loadComponent: () => import('./component/start/homepage/homepage').then(m => m.Homepage)},
-            {path:'update', loadComponent: () => import('./component/start/updates/updates').then(m => m.Updates)},
+            {path:'homepage', loadComponent: () => import('./features/auth/components/homepage').then(m => m.Homepage)},
+            {path:'update', loadComponent: () => import('./features/reports/components/updates').then(m => m.Updates)},
             //rutas programacion
-            {path:'taskpage', loadComponent: () => import('./component/programation/taskpage/taskpage').then(m => m.Taskpage)},
-            {path:'monitoringpage', loadComponent: () => import('./component/programation/monitoringpage/monitoringpage').then(m => m.Monitoringpage)},
-            {path:'historypage', loadComponent: () => import('./component/programation/historypage/historypage').then(m => m.Historypage)},
+            {path:'taskpage', loadComponent: () => import('./features/programation/components/taskpage').then(m => m.Taskpage)},
+            {path:'monitoringpage', loadComponent: () => import('./features/programation/components/monitoringpage').then(m => m.Monitoringpage)},
+            {path:'historypage', loadComponent: () => import('./features/programation/components/historypage').then(m => m.Historypage)},
             //rutas reportes
-            {path:'reportspage', loadComponent: () => import('./component/reports/reportspage/reportspage').then(m => m.Reportspage)},
-            {path:'exportspage', loadComponent: () => import('./component/reports/exportspage/exportspage').then(m => m.Exportspage)},
+            {path:'reportspage', loadComponent: () => import('./features/reports/components/reportspage').then(m => m.Reportspage)},
+            {path:'exportspage', loadComponent: () => import('./features/reports/components/exportspage').then(m => m.Exportspage)},
             //rutas perfil
-            {path: 'perfilpage', loadComponent: () => import('./component/perfil/perfilpage/perfilpage').then(m => m.Perfilpage)},
-            {path: 'updateuser', loadComponent: () => import('./component/perfil/update-user/update-user').then(m => m.UpdateUser)},
+            {path: 'perfilpage', loadComponent: () => import('./features/user/components/perfilpage').then(m => m.Perfilpage)},
+            {path: 'updateuser', loadComponent: () => import('./features/user/components/update-user').then(m => m.UpdateUser)},
             //redirige si la ruta es errada
             {path:'**',redirectTo:''}
 

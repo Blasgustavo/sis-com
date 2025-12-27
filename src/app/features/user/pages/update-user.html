@@ -1,0 +1,106 @@
+<!-- CONTENEDOR PRINCIPAL -->
+<div class="min-h-screen bg-base-200 flex items-center justify-center px-4">
+  <div class="bg-base-100 w-full max-w-lg rounded-xl shadow-2xl border border-base-300 p-8">
+
+    <!-- TÍTULO -->
+    <h2 class="text-3xl font-bold text-primary text-center mb-6">
+      🛠️ Actualizar Información de Perfil
+    </h2>
+
+    <!-- AVATAR -->
+    <div class="flex justify-center mb-6">
+      <div class="avatar">
+        <div class="w-28 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 shadow-lg">
+          <img src="https://copilot.microsoft.com/th/id/BCO.99f9ebd4-c143-442a-b7e5-25a7b164415f.png" alt="Foto de perfil" />
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMULARIO PRINCIPAL -->
+    <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+      <!-- NOMBRE -->
+      <div>
+        <label class="label font-semibold text-primary">Nombre completo</label>
+        <input
+          type="text"
+          formControlName="names"
+          class="input input-bordered w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          placeholder="Escribe tu nombre"
+        />
+      </div>
+
+      <!-- IMAGEN -->
+      <div>
+        <label class="label font-semibold text-primary">Actualizar foto</label>
+        <input
+          type="file"
+          class="file-input file-input-bordered w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          (change)="onFileChange($event)"
+          accept="image/*"
+          title="Selecciona una imagen para actualizar tu foto de perfil"
+        />
+        <p class="text-xs text-neutral-content mt-1">Tamaño máximo: 2MB</p>
+      </div>
+
+      <!-- NUEVA CONTRASEÑA -->
+      <div>
+        <label class="label font-semibold text-primary">Nueva contraseña</label>
+        <input
+          type="password"
+          formControlName="password"
+          class="input input-bordered w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          placeholder="Nueva contraseña"
+        />
+      </div>
+
+      <!-- CONFIRMAR CONTRASEÑA -->
+      <div>
+        <label class="label font-semibold text-primary">Confirmar contraseña</label>
+        <input
+          type="password"
+          formControlName="confirmPassword"
+          class="input input-bordered w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          placeholder="Confirmar contraseña"
+        />
+        <p *ngIf="perfilForm.hasError('mismatch')" class="text-error text-sm mt-1">
+          Las contraseñas no coinciden
+        </p>
+      </div>
+
+      <!-- BOTÓN GUARDAR -->
+      <button
+        class="btn btn-primary w-full mt-4 rounded-lg text-lg"
+        type="submit"
+        [disabled]="!hasChanges()"
+      >
+        💾 Guardar cambios
+      </button>
+
+    </form>
+  </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN -->
+<div class="modal" [class.modal-open]="showModal">
+  <div class="modal-box rounded-xl">
+    <h3 class="font-bold text-xl text-primary">🔐 Confirmar cambios</h3>
+    <p class="py-3 text-base-content/80">
+      Ingresa tu contraseña actual para confirmar los cambios.
+    </p>
+
+    <form [formGroup]="confirmForm">
+      <input
+        type="password"
+        formControlName="currentPassword"
+        class="input input-bordered w-full rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
+        placeholder="Contraseña actual"
+      />
+    </form>
+
+    <div class="modal-action">
+      <button class="btn btn-outline rounded-lg" (click)="cancelUpdate()">Cancelar</button>
+      <button class="btn btn-primary rounded-lg" (click)="confirmUpdate()">Confirmar</button>
+    </div>
+  </div>
+</div>
