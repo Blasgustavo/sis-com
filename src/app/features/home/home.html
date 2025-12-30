@@ -227,6 +227,18 @@
                       </button>
                     </li>
                 </ul>
+                <ul 
+                  class="overflow-hidden transition-all duration-300 p-0 space-y-2"
+                  [style.maxHeight]="isTdconfi ? '500px' : '0px'"
+                  >
+                    <li>
+                      <button 
+                        (click)="goGestionUser()" 
+                        class="flex items-center p-2 pl-11 w-full text-base-content font-normal rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">
+                          Gestion de Usuarios
+                      </button>
+                    </li>
+                </ul>
             </li>
 
         </ul>

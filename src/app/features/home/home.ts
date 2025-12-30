@@ -46,6 +46,7 @@ export class Home implements OnInit {
   goUpdateuser() {this.nav.goHidden('/home/updateuser');}
 
   goListUser() {this.nav.goHidden('/home/listuserpage');}
+  goGestionUser(){this.nav.goHidden('/home/gestionuserpage')}
 
   // Menu toggle
   isOpenMenu = false;

@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { UserListService } from '../services/user-list.service';
+import { UserData } from '../services/user.service';
 
 @Component({
   selector: 'app-list-users',
@@ -9,40 +11,35 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
   templateUrl: '../pages/list-users.html',
   styleUrls: ['../pages/list-users.css'],
 })
-export class ListUsers {
+export class ListUsers implements OnInit {
+
+  private userListService = inject(UserListService);
+
 
   filterForm: FormGroup;
 
-  users = [
-    {
-      usuario: 'bgonzales',
-      foto: 'https://via.placeholder.com/40',
-      nombres: 'Blas Gonzales',
-      rol: 'Supervisor',
-      fecha: '2024-01-15'
-    },
-    {
-      usuario: 'jperez',
-      foto: 'https://via.placeholder.com/40',
-      nombres: 'Juan Pérez',
-      rol: 'Administrador',
-      fecha: '2023-11-02'
-    }
-  ];
+  users = signal<UserData[]>([]);
+
+  ngOnInit(){
+    this.userListService.getAllUsers().subscribe({
+      next: data => this.users.set(data),
+      error: err => console.error('🚫 Error cargando usuarios', err)
+    });
+  }
 
   constructor(private fb: FormBuilder) {
     this.filterForm = this.fb.group({
       search: [''],
-      rol: ['']
+      role: ['']
     });
   }
 
   get filteredUsers() {
-    const { search, rol } = this.filterForm.value;
+    const { search, role } = this.filterForm.value;
 
-    return this.users.filter(u =>
-      (search ? u.nombres.toLowerCase().includes(search.toLowerCase()) : true) &&
-      (rol ? u.rol === rol : true)
+    return this.users().filter(u =>
+      (search ? u.names.toLowerCase().includes(search.toLowerCase()) : true) &&
+      (role ? u.role === role : true)
     );
   }
 }

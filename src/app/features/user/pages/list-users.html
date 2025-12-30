@@ -4,34 +4,53 @@
 
     <!-- TÍTULO -->
     <h2 class="text-4xl font-bold text-primary text-center mb-10">
-      🛠️ Configuración de Usuarios
+      🛠️ Lista de Usuarios
     </h2>
 
     <!-- FILTROS -->
     <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
 
+      <!-- BUSCAR -->
       <div class="form-control">
         <label class="label text-base-content font-semibold">Buscar por nombre</label>
+
         <input
           type="text"
           formControlName="search"
           placeholder="Ej. Blas Gonzales"
           class="input input-primary rounded-md bg-base-100 text-base-content btn-outline btn-primary"
         />
+
+        <!-- VALIDACIÓN -->
+        @if (filterForm.controls['search'].touched && filterForm.controls['search'].invalid) {
+          <span class="text-red-500 text-sm mt-1">
+            Debe ingresar al menos 3 caracteres.
+          </span>
+        }
       </div>
 
+      <!-- ROL -->
       <div class="form-control">
         <label class="label text-base-content font-semibold">Filtrar por rol</label>
+
         <select
-          formControlName="rol"
+          formControlName="role"
           class="select select-primary rounded-md bg-base-100 text-base-content"
         >
           <option value="">Todos los roles</option>
           <option value="Supervisor">Supervisor</option>
           <option value="Administrador">Administrador</option>
         </select>
+
+        <!-- VALIDACIÓN -->
+        @if (filterForm.controls['role'].touched && filterForm.controls['role'].invalid) {
+          <span class="text-red-500 text-sm mt-1">
+            Seleccione un rol válido.
+          </span>
+        }
       </div>
 
+      <!-- LIMPIAR -->
       <div class="form-control flex items-end">
         <button
           type="button"
@@ -48,7 +67,7 @@
     <div class="overflow-x-auto rounded-lg border border-base-300">
       <table class="table table-zebra w-full">
 
-        <thead class="bg-base-300 text-base-content text-sm uppercase tracking-wide">
+        <thead class="bg-base-300 text-base-400 text-sm uppercase tracking-wide">
           <tr>
             <th>Usuario</th>
             <th>Foto</th>
@@ -59,23 +78,23 @@
         </thead>
 
         <tbody>
-          @for (u of filteredUsers; track u.usuario) {
+          @for (u of filteredUsers; track u.user) {
             <tr>
-              <td class="font-medium">{{ u.usuario }}</td>
+              <td class="font-medium">{{ u.user }}</td>
               <td>
                 <img
-                  [src]="u.foto"
-                  alt="Foto de {{ u.nombres }}"
+                  [src]="u.image"
+                  alt="Foto de {{ u.names }}"
                   class="w-10 h-10 rounded-full border border-base-300 shadow-sm"
                 />
               </td>
-              <td>{{ u.nombres }}</td>
+              <td>{{ u.names }}</td>
               <td>
                 <span class="badge badge-outline badge-primary text-sm px-3 py-1 rounded-md">
-                  {{ u.rol }}
+                  {{ u.role }}
                 </span>
               </td>
-              <td>{{ u.fecha | date:'mediumDate' }}</td>
+              <td>{{ u.datecreate | date:'mediumDate' }}</td>
             </tr>
           }
 

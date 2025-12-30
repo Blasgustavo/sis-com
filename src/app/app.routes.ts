@@ -34,6 +34,7 @@ export const routes: Routes = [
             {path: 'updateuser', loadComponent: () => import('./features/user/components/update-user').then(m => m.UpdateUser)},
             //rutas Usuarios
             {path: 'listuserpage', loadComponent: () => import('./features/user/components/list-users').then(m => m.ListUsers)},
+            {path: 'gestionuserpage', loadComponent: () => import('./features/user/components/gestion-users').then(m => m.GestionUser)},
             
             //redirige si la ruta es errada
             {path:'**',redirectTo:''},
