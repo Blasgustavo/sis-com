@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { UserService, UpdatePayload } from '../services/user.service';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-update-user',
@@ -12,38 +12,31 @@ import { UserService, UpdatePayload } from '../services/user.service';
 })
 export class UpdateUser implements OnInit {
 
-  // Formulario principal
   perfilForm!: FormGroup;
-
-  // Formulario del modal
   confirmForm!: FormGroup;
 
-  // Controla visibilidad del modal
   showModal = false;
+  previewUrl: string | null = null;
+  isLoadingImage = false;
 
   constructor(
     private fb: FormBuilder,
-    private userService: UserService
+    public userService: UserService // 🔧 debe ser público para usarlo en el HTML
   ) {}
 
   ngOnInit(): void {
-    // Inicializa formulario principal
     this.perfilForm = this.fb.group({
       names: [''],
       image: [null],
-      password: ['', [
-        Validators.pattern(/^[A-Za-z0-9]{4,}$/) // mínimo 4 caracteres, solo letras y números
-      ]],
+      password: ['', [Validators.pattern(/^[A-Za-z0-9]{4,}$/)]],
       confirmPassword: ['']
     }, { validators: this.passwordsMatchValidator });
 
-    // Inicializa formulario del modal
     this.confirmForm = this.fb.group({
       currentPassword: ['', [Validators.required, Validators.minLength(4)]]
     });
   }
 
-  // Valida que las contraseñas coincidan
   passwordsMatchValidator(form: FormGroup) {
     const pass = form.get('password')?.value;
     const confirm = form.get('confirmPassword')?.value;
@@ -51,7 +44,6 @@ export class UpdateUser implements OnInit {
     return pass === confirm ? null : { mismatch: true };
   }
 
-  // Detecta si hay cambios válidos en el formulario
   hasChanges(): boolean {
     if (!this.perfilForm) return false;
     const raw = this.perfilForm.getRawValue();
@@ -62,55 +54,82 @@ export class UpdateUser implements OnInit {
     return Boolean(namesChanged || imageChanged || passwordValid);
   }
 
-  // Maneja el cambio de imagen
-  onFileChange(event: Event): void {
+    onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (file) {
-      this.perfilForm.get('image')?.setValue(file);
+
+    if (!file) {
+      this.previewUrl = null;
+      this.perfilForm.get('image')?.setValue(null);
+      return;
     }
+
+    this.isLoadingImage = true;
+    this.perfilForm.get('image')?.setValue(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      if (result?.startsWith('data:image')) {
+        this.previewUrl = result;
+      } else {
+        console.warn('Archivo no es una imagen válida');
+        this.previewUrl = null;
+      }
+      this.isLoadingImage = false;
+    };
+    reader.readAsDataURL(file);
   }
 
-  // Abre el modal si hay cambios
+
   onSubmit(): void {
     if (!this.hasChanges()) return;
     this.showModal = true;
   }
 
-  // Cierra el modal y limpia el campo
   cancelUpdate(): void {
     this.confirmForm.reset();
     this.showModal = false;
   }
 
-  // Confirma la actualización y envía al backend
   confirmUpdate(): void {
     if (this.confirmForm.invalid) {
-      alert('Debes ingresar tu contraseña actual para confirmar.');
+      alert('🪧 Debes ingresar tu contraseña actual para confirmar.');
       return;
     }
 
     const currentPassword = this.confirmForm.value.currentPassword;
     const raw = this.perfilForm.getRawValue();
+    const formData = new FormData();
 
-    const update: UpdatePayload = {
-      names: raw.names,
-      image: raw.image,
-      password: raw.password,
-      currentPassword
-    };
+    if (typeof raw.names === 'string' && raw.names.trim().length > 0) {
+      formData.append('names', raw.names.trim());
+    }
+
+    formData.append('currentPassword', currentPassword);
+
+    if (raw.password?.trim()) {
+      formData.append('password', raw.password.trim());
+    }
+
+    if (raw.image instanceof File && raw.image.size > 0) {
+      formData.append('image', raw.image);
+    }
 
     const username = this.userService.getUser()?.user;
-    if (!username) return;
+    if (!username) {
+      alert('No se pudo obtener el usuario actual.');
+      return;
+    }
 
-    this.userService.updateUserByUsername(username, update).subscribe({
+    this.userService.updateUserByUsername(username, formData).subscribe({
       next: updated => {
-        this.userService.updateUser(updated);
+        this.userService.updateLocalUser(updated);
         this.cancelUpdate();
       },
       error: err => {
         console.error('Error al actualizar usuario', err);
-        alert('Error al validar la contraseña. Intenta nuevamente.');
+        alert('Error al validar la contraseña o subir la imagen. Intenta nuevamente.');
       }
     });
   }

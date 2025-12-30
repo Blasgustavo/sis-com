@@ -1,108 +1,104 @@
-import { isPlatformBrowser } from '@angular/common';
-import { inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { jwtDecode } from 'jwt-decode';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-
 import { HttpClient } from '@angular/common/http';
+import { AuthTokenService } from '../../../core/service/auth-token.service';
 
 export interface UserData {
   id: string;
   user: string;
-  password: string;
+  password?: string; // opcional porque el backend NO debe devolverla
   role: string;
   datecreate: string;
   image: string;
   names: string;
-  iat?: number;
-  exp?: number;
 }
 
-// Tipo extendido para actualizaciones que incluyen validación
-export type UpdatePayload = Partial<UserData> & { currentPassword?: string };
-
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class UserService {
-  private platformId = inject(PLATFORM_ID);
-
   private userSubject = new BehaviorSubject<UserData | null>(null);
   user$ = this.userSubject.asObservable();
 
   private readonly API_URL = 'http://localhost:3000/api/users/';
 
-  constructor(private http: HttpClient) {
-    this.loadUserFromToken();
+  constructor(
+    private http: HttpClient,
+    private tokenService: AuthTokenService
+  ) {
+    this.restoreUserFromBackend();
   }
 
-  // Cargar usuario desde el token al iniciar la app
-  private loadUserFromToken() {
-    if (!isPlatformBrowser(this.platformId)) return;
+  // ============================================================
+  // Cargar usuario real desde backend usando el username del token
+  // ============================================================
 
-    const token = localStorage.getItem('authToken');
-    if (!token) return;
+  private restoreUserFromBackend() {
+    const username = this.tokenService.getUsernameFromToken();
+    if (!username) return;
 
-    try {
-      const decoded = jwtDecode<UserData>(token);
-      this.userSubject.next(decoded);
-    } catch (error) {
-      console.error('Error al decodificar el token', error);
-      this.userSubject.next(null);
-    }
+    this.loadUserFromBackend(username);
   }
 
-  // Obtener usuario actual (sincrónico)
-  getUser(): UserData | null {
-    return this.userSubject.value;
-  }
+  // ============================================================
+  // Obtener usuario desde backend
+  // ============================================================
 
-  // Cargar datos reales desde la BD
   getUserFromBackend(username: string): Observable<UserData> {
     return this.http.get<UserData>(`${this.API_URL}${username}`);
   }
 
-  // Sincronizar estado local con la BD
-  loadUserFromBackend() {
-    const username = this.getUser()?.user;
-    if (!username) return;
+  // ============================================================
+  // Cargar usuario y actualizar estado local
+  // ============================================================
 
+  loadUserFromBackend(username: string) {
     this.getUserFromBackend(username).subscribe({
       next: user => this.userSubject.next(user),
-      error: err => console.error('Error cargando usuario desde backend', err)
+      error: err => console.error('Error cargando usuario', err)
     });
   }
 
-  // Actualizar usuario localmente (solo frontend)
-  updateUser(data: Partial<UserData>) {
-    const { password, ...safeData } = data;
-    const current = this.userSubject.value;
-    if (!current) return;
+  // ============================================================
+  // Obtener usuario actual
+  // ============================================================
 
-    const updated = { ...current, ...safeData };
-    this.userSubject.next(updated);
+  getUser(): UserData | null {
+    return this.userSubject.value;
   }
 
-  // Actualizar usuario en el servidor por username (con validación opcional)
-  updateUserByUsername(username: string, data: UpdatePayload): Observable<UserData> {
-    return this.http.put<UserData>(`${this.API_URL}${username}`, data, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+  // ============================================================
+  // Actualizar usuario localmente (sin password)
+  // ============================================================
+
+  updateLocalUser(user: UserData) {
+    const { password, ...clean } = user;
+    this.userSubject.next({ ...clean });
   }
 
-  // Actualizar usuario y sincronizar estado local
-  syncUserUpdate(username: string, data: UpdatePayload) {
+  // ============================================================
+  // Actualizar usuario en backend
+  // ============================================================
+
+  updateUserByUsername(username: string, data: FormData): Observable<UserData> {
+    return this.http.put<UserData>(`${this.API_URL}${username}`, data);
+  }
+
+  // ============================================================
+  // Actualizar backend + estado local
+  // ============================================================
+
+  syncUserUpdate(username: string, data: FormData) {
     return this.updateUserByUsername(username, data).subscribe({
-      next: updatedUser => {
-        this.updateUser(updatedUser);
-      },
-      error: err => {
-        console.error('Error al actualizar usuario en el servidor', err);
-      }
+      next: updated => this.updateLocalUser(updated),
+      error: err => console.error('Error actualizando usuario', err)
     });
   }
 
-  // Limpiar usuario al cerrar sesión
+  // ============================================================
+  // Logout
+  // ============================================================
+
   clearUser() {
     this.userSubject.next(null);
+    this.tokenService.clearToken();
   }
 }

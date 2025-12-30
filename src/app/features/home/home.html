@@ -1,6 +1,6 @@
 <div class="flex">
 
-  <!-- Mobile menu button -- corregir la ubicacion -->  
+  <!-- Mobile menu button -->  
   <div 
       id="btn-menu"
       type="button"
@@ -26,7 +26,7 @@
                 <svg aria-hidden="true" class="w-20 h-20 " fill="currentColor">
                   <use href="assets/sprite.svg#icon-user"></use>
                 </svg>
-                <span class="ml-5">Bienbenido</span>
+                <span class="ml-5">Bienvenido</span>
                 <span class="ml-5">{{userName()}}</span>
                 <span class="ml-5">({{userRole()}})</span>
               </p>
@@ -121,7 +121,7 @@
                     <button 
                       (click)="goReportspage()" 
                       class="flex items-center p-2 pl-11 w-full text-base-content font-normal rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">
-                      Estado de ejecución
+                      Estado de ejecusión
                     </button>
                   </li>
                   <li>
@@ -265,7 +265,7 @@
       </label>
     </div>
   </aside>
-  <main class="flex-1 p-6 sm:ml-64"> 
+  <main class="flex-1 sm:ml-64"> 
     <router-outlet></router-outlet>
   </main>
 </div>
