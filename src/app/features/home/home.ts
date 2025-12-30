@@ -1,3 +1,4 @@
+import { ListUsers } from '../user/components/list-users';
 import { Component, computed, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { UserService, UserData } from '../user/services/user.service';
@@ -43,6 +44,8 @@ export class Home implements OnInit {
 
   goPerfilpage() {this.nav.goHidden('/home/perfilpage');}
   goUpdateuser() {this.nav.goHidden('/home/updateuser');}
+
+  goListUser() {this.nav.goHidden('/home/listuserpage');}
 
   // Menu toggle
   isOpenMenu = false;

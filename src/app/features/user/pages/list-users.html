@@ -1,0 +1,95 @@
+<!-- CONTENEDOR PRINCIPAL -->
+<div class="min-h-screen bg-base-100 flex items-center justify-center px-4 py-10">
+  <div class="bg-base-100 w-full max-w-6xl rounded-xl shadow-xl border border-base-300 p-8">
+
+    <!-- TÍTULO -->
+    <h2 class="text-4xl font-bold text-primary text-center mb-10">
+      🛠️ Configuración de Usuarios
+    </h2>
+
+    <!-- FILTROS -->
+    <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+
+      <div class="form-control">
+        <label class="label text-base-content font-semibold">Buscar por nombre</label>
+        <input
+          type="text"
+          formControlName="search"
+          placeholder="Ej. Blas Gonzales"
+          class="input input-primary rounded-md bg-base-100 text-base-content btn-outline btn-primary"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-base-content font-semibold">Filtrar por rol</label>
+        <select
+          formControlName="rol"
+          class="select select-primary rounded-md bg-base-100 text-base-content"
+        >
+          <option value="">Todos los roles</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="Administrador">Administrador</option>
+        </select>
+      </div>
+
+      <div class="form-control flex items-end">
+        <button
+          type="button"
+          (click)="filterForm.reset()"
+          class="btn btn-outline btn-primary rounded-md w-full"
+        >
+          Limpiar filtros
+        </button>
+      </div>
+
+    </form>
+
+    <!-- TABLA DE USUARIOS -->
+    <div class="overflow-x-auto rounded-lg border border-base-300">
+      <table class="table table-zebra w-full">
+
+        <thead class="bg-base-300 text-base-content text-sm uppercase tracking-wide">
+          <tr>
+            <th>Usuario</th>
+            <th>Foto</th>
+            <th>Nombres</th>
+            <th>Rol</th>
+            <th>Fecha creación</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (u of filteredUsers; track u.usuario) {
+            <tr>
+              <td class="font-medium">{{ u.usuario }}</td>
+              <td>
+                <img
+                  [src]="u.foto"
+                  alt="Foto de {{ u.nombres }}"
+                  class="w-10 h-10 rounded-full border border-base-300 shadow-sm"
+                />
+              </td>
+              <td>{{ u.nombres }}</td>
+              <td>
+                <span class="badge badge-outline badge-primary text-sm px-3 py-1 rounded-md">
+                  {{ u.rol }}
+                </span>
+              </td>
+              <td>{{ u.fecha | date:'mediumDate' }}</td>
+            </tr>
+          }
+
+          @if (filteredUsers.length === 0) {
+            <tr>
+              <td colspan="5" class="text-center py-6 text-base-content/70">
+                No se encontraron usuarios con los filtros aplicados.
+              </td>
+            </tr>
+          }
+        </tbody>
+
+      </table>
+    </div>
+
+  </div>
+</div>

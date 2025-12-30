@@ -32,8 +32,11 @@ export const routes: Routes = [
             //rutas perfil
             {path: 'perfilpage', loadComponent: () => import('./features/user/components/perfilpage').then(m => m.Perfilpage)},
             {path: 'updateuser', loadComponent: () => import('./features/user/components/update-user').then(m => m.UpdateUser)},
+            //rutas Usuarios
+            {path: 'listuserpage', loadComponent: () => import('./features/user/components/list-users').then(m => m.ListUsers)},
+            
             //redirige si la ruta es errada
-            {path:'**',redirectTo:''}
+            {path:'**',redirectTo:''},
 
         ]
     },

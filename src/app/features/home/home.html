@@ -192,42 +192,40 @@
                   [style.maxHeight]="isTdAyuda ? '500px' : '0px'"
                 >
                         <li>
-                            <a href="#" class="flex items-center p-2 pl-11 w-full text-base-content font-normal  rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">Preguntas frecuentes</a>
+                          <a href="#" class="flex items-center p-2 pl-11 w-full text-base-content font-normal  rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">Preguntas frecuentes</a>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center p-2 pl-11 w-full text-base-content font-normal  rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">Contacto Soporte</a>
+                          <a href="#" class="flex items-center p-2 pl-11 w-full text-base-content font-normal  rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">Contacto Soporte</a>
                         </li>
-                </ul>
-            </li>
-            <li>
-              <button type="button" 
-                  (click)="tdConfi()" 
-                  class="flex items-center p-2 w-full text-base-content 
-                    rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">
-                    <svg aria-hidden="true" class=" w-6 h-6 transition duration-75" fill="currentColor">
-                    <use href="assets/sprite.svg#icon-config"></use>  
-                    </svg>
-                    
-                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Configuración</span>
-                    <svg aria-hidden="true" class="w-6 h-6 transition-transform duration-300"
+                      </ul>
+                    </li>
+                    <li>
+                      <button type="button" 
+                      (click)="tdConfi()" 
+                      class="flex items-center p-2 w-full text-base-content 
+                      rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">
+                      <svg aria-hidden="true" class=" w-6 h-6 transition duration-75" fill="currentColor">
+                        <use href="assets/sprite.svg#icon-config"></use>  
+                      </svg>
+                      
+                      <span class="flex-1 ml-3 text-left whitespace-nowrap">Configuración</span>
+                      <svg aria-hidden="true" class="w-6 h-6 transition-transform duration-300"
                       [class.rotate-180]="isTdconfi"
                       fill="currentColor">
                       <use href="assets/sprite.svg#icon-arrow-down"></use>
                     </svg>
-                </button>
-                <ul 
+                  </button>
+                  <ul 
                   class="overflow-hidden transition-all duration-300 p-0 space-y-2"
                   [style.maxHeight]="isTdconfi ? '500px' : '0px'"
-                >
-                        <li>
-                            <a href="#" class="flex items-center p-2 pl-11 w-full text-base-content font-normal  rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">Usuarios</a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center p-2 pl-11 w-full text-base-content font-normal  rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">Roles y permisos</a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center p-2 pl-11 w-full text-base-content font-normal  rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">Parametros de sistema</a>
-                        </li>
+                  >
+                    <li>
+                      <button 
+                        (click)="goListUser()" 
+                        class="flex items-center p-2 pl-11 w-full text-base-content font-normal rounded-lg transition duration-75 group hover:bg-base-200 hover:text-primary">
+                          Usuarios
+                      </button>
+                    </li>
                 </ul>
             </li>
 
