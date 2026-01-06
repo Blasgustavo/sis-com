@@ -1,0 +1,136 @@
+<!--
+  Componente: UserForm
+  Descripción:
+    Formulario reactivo para crear o editar usuarios.
+    Incluye validaciones dinámicas y control flow moderno (@if).
+    Cada input incluye la propiedad "title" siguiendo las recomendaciones MDN.
+-->
+
+<div class="card bg-base-200 shadow-xl p-6 mt-6">
+
+  <!-- Título dinámico -->
+  <h2 class="text-xl font-semibold mb-4">
+    @if (selectedUser()) {
+      Editar Usuario
+    } @else {
+      Crear Usuario
+    }
+  </h2>
+
+  <!-- Formulario reactivo -->
+  <form [formGroup]="form()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    <!-- Usuario -->
+    <div class="form-control">
+      <label class="label">Usuario</label>
+
+      <input
+        type="text"
+        formControlName="user"
+        class="input input-bordered"
+        title="Ingrese el nombre de usuario. Debe ser único y válido."
+        [class.input-error]="form().controls['user'].touched && form().controls['user'].invalid"
+
+      />
+
+      @if (form().controls['user'].touched && form().controls['user'].invalid) {
+        <span class="text-red-500 text-sm mt-1">Ingrese un usuario correcto</span>
+      }
+    </div>
+
+    <!-- Nombres -->
+    <div class="form-control">
+      <label class="label">Nombres</label>
+
+      <input
+        type="text"
+        formControlName="names"
+        class="input input-bordered"
+        title="Ingrese los nombres completos del usuario."
+        [class.input-error]="form().controls['names'].touched && form().controls['names'].invalid"
+      />
+
+      @if (form().controls['names'].touched && form().controls['names'].invalid) {
+        <span class="text-red-500 text-sm mt-1">Los nombres son obligatorios.</span>
+      }
+    </div>
+
+    <!-- Rol -->
+    <div class="form-control">
+      <label class="label">Rol</label>
+
+      <select
+        formControlName="role"
+        class="select select-bordered"
+        title="Seleccione el rol asignado al usuario."
+        [class.select-error]="form().controls['role'].touched && form().controls['role'].invalid"
+      >
+        <option value="">Seleccione</option>
+        <option value="Administrador">Administrador</option>
+        <option value="Supervisor">Supervisor</option>
+        <option value="Usuario">Usuario</option>
+      </select>
+
+      @if (form().controls['role'].touched && form().controls['role'].invalid) {
+        <span class="text-red-500 text-sm mt-1">Debe seleccionar un rol.</span>
+      }
+    </div>
+
+    <!-- Contraseña -->
+    <div class="form-control">
+      <label class="label">Contraseña</label>
+
+      <input
+        type="password"
+        formControlName="password"
+        class="input input-bordered"
+        title="Ingrese una contraseña segura. Mínimo 6 caracteres."
+        [class.input-error]="form().controls['password'].touched && form().controls['password'].invalid"
+      />
+
+      @if (form().controls['password'].touched && form().controls['password'].invalid) {
+        <span class="text-red-500 text-sm mt-1">
+          La contraseña debe tener mínimo 6 caracteres.
+        </span>
+      }
+    </div>
+
+    <!-- Imagen -->
+    <div class="form-control md:col-span-2">
+      <label class="label">Imagen</label>
+
+      <input
+        type="file"
+        formControlName="image"
+        class="file-input file-input-bordered w-full"
+        title="Seleccione una imagen para el perfil del usuario."
+      />
+    </div>
+
+    <!-- Botones -->
+    <div class="md:col-span-2 flex gap-3 mt-4">
+
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="save.emit()"
+        [disabled]="form().invalid"
+        title="Guardar los datos del usuario."
+      >
+        Guardar
+      </button>
+
+      @if (selectedUser()) {
+        <button
+          class="btn"
+          type="button"
+          (click)="cancel.emit()"
+          title="Cancelar la edición y volver a la lista."
+        >
+          Cancelar
+        </button>
+      }
+    </div>
+
+  </form>
+</div>

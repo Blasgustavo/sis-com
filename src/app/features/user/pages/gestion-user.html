@@ -1,143 +1,32 @@
-<!-- CONTENEDOR PRINCIPAL -->
+<!--
+  Componente: UserList
+  Descripción:
+    Vista principal para la gestión de usuarios.
+    Muestra la tabla de usuarios y el formulario de creación/edición.
+    Utiliza signals modernos para manejar el estado reactivo.
+    Compatible con Angular 17–21.
+-->
+
 <div class="min-h-screen bg-base-100 flex items-center justify-center px-4 py-10">
   <div class="bg-base-100 w-full max-w-6xl rounded-xl shadow-xl border border-base-300 p-8">
 
+    <!-- Título principal -->
     <h1 class="text-3xl font-bold mb-6">Gestión de Usuarios</h1>
 
     <!-- Tabla de usuarios -->
-    <div class="overflow-x-auto">
-      <table class="table table-zebra w-full">
-        <thead>
-          <tr>
-            <th>Usuario</th>
-            <th>Nombres</th>
-            <th>Rol</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
+    <app-user-table
+      [users]="users()"
+      (edit)="selectUser($event)"
+      (delete)="deleteUser($event)"
+    />
 
-        <tbody>
-          @for (u of users(); track u.id) {
-            <tr>
-              <td>{{ u.user }}</td>
-              <td>{{ u.names }}</td>
-              <td>{{ u.role }}</td>
-              <td class="space-x-2">
-                <button class="btn btn-sm btn-warning" (click)="selectUser(u)">Editar</button>
-                <button class="btn btn-sm btn-error" (click)="deleteUser(u.id)">Eliminar</button>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Formulario -->
-    <div class="card bg-base-200 shadow-xl p-6 mt-6">
-      <h2 class="text-xl font-semibold mb-4">
-        @if (selectedUser()) {
-          Editar Usuario
-        } @else {
-          Crear Usuario
-        }
-      </h2>
-
-      <form [formGroup]="form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-        <!-- Usuario -->
-        <div class="form-control">
-          <label class="label">Usuario</label>
-          <input
-            type="text"
-            formControlName="user"
-            class="input input-bordered rounded-md bg-base-100 text-base-content"
-            [class.input-error]="form.controls['user'].touched && form.controls['user'].invalid"
-          />
-
-          @if (form.controls['user'].touched && form.controls['user'].invalid) {
-            <span class="text-red-500 text-sm mt-1">El usuario es obligatorio.</span>
-          }
-        </div>
-
-        <!-- Nombres -->
-        <div class="form-control">
-          <label class="label">Nombres</label>
-          <input
-            type="text"
-            formControlName="names"
-            class="input input-bordered rounded-md bg-base-100 text-base-content"
-            [class.input-error]="form.controls['names'].touched && form.controls['names'].invalid"
-          />
-
-          @if (form.controls['names'].touched && form.controls['names'].invalid) {
-            <span class="text-red-500 text-sm mt-1">Los nombres son obligatorios.</span>
-          }
-        </div>
-
-        <!-- Rol -->
-        <div class="form-control">
-          <label class="label">Rol</label>
-          <select
-            formControlName="role"
-            class="select select-bordered rounded-md bg-base-100 text-base-content"
-            [class.select-error]="form.controls['role'].touched && form.controls['role'].invalid"
-          >
-            <option value="">Seleccione</option>
-            <option value="Administrador">Administrador</option>
-            <option value="Supervisor">Supervisor</option>
-            <option value="Usuario">Usuario</option>
-          </select>
-
-          @if (form.controls['role'].touched && form.controls['role'].invalid) {
-            <span class="text-red-500 text-sm mt-1">Debe seleccionar un rol.</span>
-          }
-        </div>
-
-        <!-- Contraseña -->
-        <div class="form-control">
-          <label class="label">Contraseña</label>
-          <input
-            type="password"
-            formControlName="password"
-            class="input input-bordered rounded-md bg-base-100 text-base-content"
-            [class.input-error]="form.controls['password'].touched && form.controls['password'].invalid"
-          />
-
-          @if (form.controls['password'].touched && form.controls['password'].invalid) {
-            <span class="text-red-500 text-sm mt-1">La contraseña debe tener mínimo 6 caracteres.</span>
-          }
-        </div>
-
-        <!-- Imagen -->
-        <div class="form-control md:col-span-2">
-          <label class="label">Imagen</label>
-          <input
-            type="file"
-            formControlName="image"
-            class="file-input file-input-bordered w-full rounded-md bg-base-100 text-base-content"
-          />
-        </div>
-
-        <!-- Botones -->
-        <div class="md:col-span-2 flex gap-3 mt-4">
-          <button
-            class="btn btn-primary"
-            type="button"
-            (click)="saveUser()"
-            [disabled]="form.invalid"
-          >
-            Guardar
-          </button>
-
-          @if (selectedUser()) {
-            <button class="btn" type="button" (click)="clearSelection()">
-              Cancelar
-            </button>
-          }
-        </div>
-
-      </form>
-    </div>
+    <!-- Formulario de usuario -->
+    <app-user-form
+      [form]="form()"
+      [selectedUser]="selectedUser()"
+      (save)="saveUser()"
+      (cancel)="clearSelection()"
+    />
 
   </div>
 </div>

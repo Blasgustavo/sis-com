@@ -1,0 +1,59 @@
+<!--
+  Componente: UserTable
+  Descripción:
+    Tabla responsiva que muestra la lista de usuarios.
+    Incluye acciones de edición y eliminación emitidas al componente padre.
+
+  Notas:
+    - Usa control flow moderno (@for).
+    - Compatible con Angular 17+ y preparado para Angular 20/21.
+    - Las acciones se emiten mediante output() desde el componente TypeScript.
+-->
+
+<div class="overflow-x-auto">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr>
+        <th>Usuario</th>
+        <th>Nombres</th>
+        <th>Rol</th>
+        <th class="text-center">Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <!--
+        Iteración moderna con @for:
+        - users() es un signal recibido desde el componente padre.
+        - track user.id optimiza el renderizado.
+      -->
+      @for (user of users(); track user.id) {
+        <tr>
+          <td>{{ user.user }}</td>
+          <td>{{ user.names }}</td>
+          <td>{{ user.role }}</td>
+
+          <td class="flex gap-2 justify-center">
+            <!-- Botón de edición -->
+            <button
+              type="button"
+              class="btn btn-sm btn-warning"
+              (click)="edit.emit(user)"
+            >
+              Editar
+            </button>
+
+            <!-- Botón de eliminación -->
+            <button
+              type="button"
+              class="btn btn-sm btn-error"
+              (click)="delete.emit(user.id)"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

@@ -1,24 +1,29 @@
-import { Component, signal, computed } from '@angular/core';
-import { UserData, UserService } from '../services/user.service';
+import { Component, signal, computed, effect } from '@angular/core';
+import { UserService } from '../services/user.service';
+import { UserData } from '../../../shared/models/user.model';
 
 @Component({
   selector: 'app-perfilpage',
+  standalone: true,
   imports: [],
   templateUrl: '../pages/perfilpage.html',
-  styleUrl: '../pages/perfilpage.css',
 })
 export class Perfilpage {
-  // Definimos userSginal para 
-  private userSignal = signal<UserData | null>(null);
-  // Usamos signals para recuperar datos del servicio
-  userUser = computed( () => this.userSignal()?.user ?? "")
-  userRole = computed( () => this.userSignal()?.role ?? "")
-  userImage = computed( () => this.userSignal()?.image ?? "")
-  userNames = computed( () => this.userSignal()?.names ?? "")
-  
-  constructor(private userService: UserService) {
-    // le asignamos los datos almacenados en 
-    this.userService.user$.subscribe(user => { this.userSignal.set(user); });
-  }
 
+  // Estado local del usuario
+  private userSignal = signal<UserData | null>(null);
+
+  // Campos derivados
+  userUser  = computed(() => this.userSignal()?.user  ?? "");
+  userRole  = computed(() => this.userSignal()?.role  ?? "");
+  userImage = computed(() => this.userSignal()?.image ?? "");
+  userNames = computed(() => this.userSignal()?.names ?? "");
+
+  constructor(private userService: UserService) {
+
+    // Reacciona automáticamente a cambios en el UserService
+    effect(() => {
+      this.userSignal.set(this.userService.user());
+    });
+  }
 }

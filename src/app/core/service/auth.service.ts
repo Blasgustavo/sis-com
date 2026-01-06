@@ -1,65 +1,109 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import {
+  signalStore,
+  withState,
+  withMethods,
+  withComputed,
+  patchState
+} from '@ngrx/signals';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
-import { PLATFORM_ID } from '@angular/core';
-
+import { tap } from 'rxjs';
+import { API } from '../config/api.config';
 import { AuthTokenService } from './auth-token.service';
-import { UserService } from '../../features/user/services/user.service';
+import { UserStore } from '../service/user.store';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AuthService {
-  private platformId = inject(PLATFORM_ID);
-  private apiUrl = 'http://localhost:3000/api/auth/login';
-
-  constructor(
-    private http: HttpClient,
-    private tokenService: AuthTokenService,
-    private userService: UserService
-  ) {}
+@Injectable({ providedIn: 'root' })
+export class AuthService extends signalStore(
 
   // ============================================================
-  // LOGIN
+  // STATE
   // ============================================================
-
-  login(user: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, { user, password }).pipe(
-      tap((res: any) => {
-        if (!res.token) {
-          console.error('No se recibió un token de autenticación');
-          throw new Error('No se recibió un token de autenticación');
-        }
-
-        // 1. Guardar token
-        this.tokenService.setToken(res.token);
-
-        // 2. Obtener username desde el token
-        const username = this.tokenService.getUsernameFromToken();
-
-        // 3. Cargar usuario real desde backend
-        if (username) {
-          this.userService.loadUserFromBackend(username);
-        }
-      })
-    );
-  }
+  withState({
+    loading: false,
+    error: null as string | null
+  }),
 
   // ============================================================
-  // LOGOUT
+  // COMPUTED
   // ============================================================
-
-  logout() {
-    this.tokenService.clearToken();
-    this.userService.clearUser();
-  }
+  withComputed(({ loading, error }) => ({
+    isLoading: () => loading(),
+    hasError: () => error() !== null,
+    errorMessage: () => error() ?? ''
+  })),
 
   // ============================================================
-  // ESTADO DE AUTENTICACIÓN
+  // METHODS
   // ============================================================
+  withMethods((store) => {
+    const http = inject(HttpClient);
+    const tokenService = inject(AuthTokenService);
+    const userStore = inject(UserStore);
 
-  isLoggedIn(): boolean {
-    return this.tokenService.getToken() !== null;
-  }
-}
+    return {
+
+      /**
+       * Inicia sesión con credenciales.
+       * Guarda el token y carga el usuario desde backend.
+       */
+      login(user: string, password: string, remember: boolean) {
+        patchState(store, { loading: true, error: null });
+
+        return http.post<{ token: string }>(API.login, { user, password }).pipe(
+          tap({
+            next: (res) => {
+              if (!res.token) {
+                patchState(store, { loading: false, error: 'Token no recibido' });
+                return;
+              }
+
+              tokenService.setToken(res.token, remember);
+
+              const username = tokenService.getUsernameFromToken();
+              if (username) {
+                userStore.loadUserFromBackend(username);
+              }
+
+              patchState(store, { loading: false });
+            },
+            error: () => {
+              tokenService.clearToken();
+              userStore.clearUser();
+              patchState(store, { loading: false, error: 'Credenciales incorrectas' });
+            }
+          })
+        );
+      },
+
+      /**
+       * Cierra sesión y limpia datos locales.
+       */
+      logout() {
+        tokenService.clearToken();
+        userStore.clearUser();
+        patchState(store, { error: null });
+      },
+
+      /**
+       * Verifica si hay sesión activa.
+       */
+      isLoggedIn(): boolean {
+        return tokenService.getToken() !== null;
+      },
+
+      /**
+       * Establece un mensaje de error manualmente.
+       */
+      setError(message: string) {
+        patchState(store, { error: message });
+      },
+
+      /**
+       * Limpia el mensaje de error.
+       */
+      clearError() {
+        patchState(store, { error: null });
+      }
+    };
+  })
+) {}

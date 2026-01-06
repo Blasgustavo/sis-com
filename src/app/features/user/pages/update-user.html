@@ -13,20 +13,21 @@
         <div class="w-28 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 shadow-lg relative overflow-hidden">
 
           <!-- Loader -->
-          <div *ngIf="isLoadingImage" class="absolute inset-0 flex items-center justify-center bg-base-100/60 z-10">
-            <span class="loading loading-spinner loading-md text-primary"></span>
-          </div>
+          @if (isLoadingImage()) {
+            <div class="absolute inset-0 flex items-center justify-center bg-base-100/60 z-10">
+              <span class="loading loading-spinner loading-md text-primary"></span>
+            </div>
+          }
 
           <!-- Imagen dinámica -->
           <img
-            [src]="previewUrl || userService.getUser()?.image"
+            [src]="previewUrl() || userService.user()?.image"
             alt="Foto de perfil"
             class="w-full h-full object-cover"
           />
 
         </div>
       </div>
-
     </div>
 
     <!-- FORMULARIO PRINCIPAL -->
@@ -76,9 +77,12 @@
           class="input input-bordered w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           placeholder="Confirmar contraseña"
         />
-        <p *ngIf="perfilForm.hasError('mismatch')" class="text-error text-sm mt-1">
-          Las contraseñas no coinciden
-        </p>
+
+        @if (perfilForm.hasError('mismatch')) {
+          <p class="text-error text-sm mt-1">
+            Las contraseñas no coinciden
+          </p>
+        }
       </div>
 
       <!-- BOTÓN GUARDAR -->
@@ -95,7 +99,7 @@
 </div>
 
 <!-- MODAL DE CONFIRMACIÓN -->
-<div class="modal" [class.modal-open]="showModal">
+<div class="modal" [class.modal-open]="showModal()">
   <div class="modal-box rounded-xl">
     <h3 class="font-bold text-xl text-primary">🔐 Confirmar cambios</h3>
     <p class="py-3 text-base-content/80">
@@ -116,4 +120,3 @@
       <button class="btn btn-primary rounded-lg" (click)="confirmUpdate()">Confirmar</button>
     </div>
   </div>
-</div>

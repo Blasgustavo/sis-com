@@ -1,34 +1,51 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AuthService } from '../../../core/service/auth.service';
 import { NavService } from '../../../core/service/nav.service';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   imports: [FormsModule],
   templateUrl: '../pages/login.html',
-  styleUrl: '../pages/login.css',
 })
 export class Login {
-  //Definicion de variables para el usuario y la contraseña
-  user: string = '';
-  password: string = '';
-  //Inyeccion del router en el constructor
-  constructor(private authService: AuthService, private nav:NavService) {}
-  //Metodo para manejar el evento de login
-  onLogin() {
-    console.log("Intentando iniciar sesion con usuario:", this.user);
-    this.authService.login(this.user, this.password).subscribe({
-      next: (response) => {
-        console.log('Login exitoso:', response);
-        localStorage.setItem('authToken', response.token);
-        //Navegacion a la pagina Home despues del login
+
+  /** Usuario ingresado en el formulario */
+  user = '';
+
+  /** Contraseña ingresada */
+  password = '';
+
+  /** Recordar sesión (checkbox) */
+  remember = false;
+
+  /** Servicios inyectados */
+  readonly auth = inject(AuthService);
+  readonly nav = inject(NavService);
+
+  /**
+   * Maneja el intento de inicio de sesión.
+   * Valida campos, ejecuta login y redirige si es exitoso.
+   */
+  onLogin(): void {
+    // Validación básica
+    if (!this.user || !this.password) {
+      this.auth.setError('Debe ingresar usuario y contraseña');
+      return;
+    }
+
+    // Ejecutar login
+    this.auth.login(this.user, this.password, this.remember).subscribe({
+      next: () => {
+        // Si hubo error en el AuthService, no navegamos
+        if (this.auth.hasError()) return;
+
+        // Login exitoso → navegar
         this.nav.goReplace('/home');
       },
-      error: (error) => {
-        console.error('Error en el login:', error);
-        alert('Credenciales incorrectas. Por favor, intente de nuevo.');
+      error: () => {
+        this.auth.setError('Error inesperado en el servidor');
       }
     });
   }

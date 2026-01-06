@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormControl
+} from '@angular/forms';
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -8,123 +14,137 @@ import { UserService } from '../services/user.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: '../pages/update-user.html',
-  styleUrl: '../pages/update-user.css',
 })
 export class UpdateUser implements OnInit {
 
-  perfilForm!: FormGroup;
-  confirmForm!: FormGroup;
+  private fb = inject(FormBuilder);
+  public userService = inject(UserService);
 
-  showModal = false;
-  previewUrl: string | null = null;
-  isLoadingImage = false;
+  // Signals
+  showModal = signal(false);
+  previewUrl = signal<string | null>(null);
+  isLoadingImage = signal(false);
 
-  constructor(
-    private fb: FormBuilder,
-    public userService: UserService // 🔧 debe ser público para usarlo en el HTML
-  ) {}
+  perfilForm!: FormGroup<{
+    names: FormControl<string>;
+    image: FormControl<File | null>;
+    password: FormControl<string>;
+    confirmPassword: FormControl<string>;
+  }>;
+
+  confirmForm!: FormGroup<{
+    currentPassword: FormControl<string>;
+  }>;
 
   ngOnInit(): void {
     this.perfilForm = this.fb.group({
-      names: [''],
-      image: [null],
-      password: ['', [Validators.pattern(/^[A-Za-z0-9]{4,}$/)]],
-      confirmPassword: ['']
+      names: this.fb.control('', { nonNullable: true }),
+      image: this.fb.control<File | null>(null),
+      password: this.fb.control('', {
+        nonNullable: true,
+        validators: [Validators.pattern(/^[A-Za-z0-9]{4,}$/)]
+      }),
+      confirmPassword: this.fb.control('', { nonNullable: true })
     }, { validators: this.passwordsMatchValidator });
 
     this.confirmForm = this.fb.group({
-      currentPassword: ['', [Validators.required, Validators.minLength(4)]]
+      currentPassword: this.fb.control('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.minLength(4)]
+      })
     });
   }
 
-  passwordsMatchValidator(form: FormGroup) {
+  private passwordsMatchValidator(form: FormGroup) {
     const pass = form.get('password')?.value;
     const confirm = form.get('confirmPassword')?.value;
+
     if (!pass && !confirm) return null;
     return pass === confirm ? null : { mismatch: true };
   }
 
   hasChanges(): boolean {
-    if (!this.perfilForm) return false;
     const raw = this.perfilForm.getRawValue();
+
+    const namesChanged = raw.names.trim().length > 0;
+    const imageChanged = raw.image instanceof File;
     const passwordTouched = !!raw.password || !!raw.confirmPassword;
     const passwordValid = passwordTouched && !this.perfilForm.hasError('mismatch');
-    const namesChanged = typeof raw.names === 'string' && raw.names.trim().length > 0;
-    const imageChanged = !!raw.image;
-    return Boolean(namesChanged || imageChanged || passwordValid);
+
+    return namesChanged || imageChanged || passwordValid;
   }
 
-    onFileChange(event: Event): void {
+  onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
 
     if (!file) {
-      this.previewUrl = null;
-      this.perfilForm.get('image')?.setValue(null);
+      this.previewUrl.set(null);
+      this.perfilForm.controls.image.setValue(null);
       return;
     }
 
-    this.isLoadingImage = true;
-    this.perfilForm.get('image')?.setValue(file);
+    this.isLoadingImage.set(true);
+    this.perfilForm.controls.image.setValue(file);
 
     const reader = new FileReader();
     reader.onloadend = () => {
       const result = reader.result as string;
+
       if (result?.startsWith('data:image')) {
-        this.previewUrl = result;
+        this.previewUrl.set(result);
       } else {
         console.warn('Archivo no es una imagen válida');
-        this.previewUrl = null;
+        this.previewUrl.set(null);
       }
-      this.isLoadingImage = false;
+
+      this.isLoadingImage.set(false);
     };
+
     reader.readAsDataURL(file);
   }
 
-
   onSubmit(): void {
     if (!this.hasChanges()) return;
-    this.showModal = true;
+    this.showModal.set(true);
   }
 
   cancelUpdate(): void {
     this.confirmForm.reset();
-    this.showModal = false;
+    this.showModal.set(false);
   }
 
   confirmUpdate(): void {
     if (this.confirmForm.invalid) {
-      alert('🪧 Debes ingresar tu contraseña actual para confirmar.');
+      alert('Debes ingresar tu contraseña actual para confirmar.');
       return;
     }
 
-    const currentPassword = this.confirmForm.value.currentPassword;
     const raw = this.perfilForm.getRawValue();
     const formData = new FormData();
 
-    if (typeof raw.names === 'string' && raw.names.trim().length > 0) {
-      formData.append('names', raw.names.trim());
-    }
+    if (raw.names.trim()) formData.append('names', raw.names.trim());
+    if (raw.password.trim()) formData.append('password', raw.password.trim());
+    if (raw.image instanceof File) formData.append('image', raw.image);
 
+    const currentPassword = this.confirmForm.value.currentPassword?.trim();
+    if (!currentPassword) {
+      alert('Debes ingresar tu contraseña actual para confirmar.');
+      return;
+    }
     formData.append('currentPassword', currentPassword);
 
-    if (raw.password?.trim()) {
-      formData.append('password', raw.password.trim());
-    }
-
-    if (raw.image instanceof File && raw.image.size > 0) {
-      formData.append('image', raw.image);
-    }
-
-    const username = this.userService.getUser()?.user;
+    const username = this.userService.user()?.user;
     if (!username) {
       alert('No se pudo obtener el usuario actual.');
       return;
     }
 
-    this.userService.updateUserByUsername(username, formData).subscribe({
+    // Nuevo método del UserService (Signals)
+    this.userService.updateUser(username, formData).subscribe({
       next: updated => {
-        this.userService.updateLocalUser(updated);
+        // Actualiza el estado global con Signals
+        this.userService['setLocalUser'](updated);
         this.cancelUpdate();
       },
       error: err => {

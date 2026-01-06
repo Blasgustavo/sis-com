@@ -1,104 +1,107 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
 import { AuthTokenService } from '../../../core/service/auth-token.service';
+import { UserData } from '../../../shared/models/user.model';
+import { API } from '../../../core/config/api.config';
 
-export interface UserData {
-  id: string;
-  user: string;
-  password?: string; // opcional porque el backend NO debe devolverla
-  role: string;
-  datecreate: string;
-  image: string;
-  names: string;
-}
-
+/**
+ * Servicio: UserService
+ *
+ * Descripción:
+ *  Maneja el estado global del usuario autenticado.
+ *  Permite:
+ *    - Cargar usuario desde backend
+ *    - Restaurar usuario desde token
+ *    - Actualizar perfil
+ *    - Limpiar sesión
+ *
+ * Arquitectura:
+ *  - Usa signals para estado reactivo
+ *  - Usa API centralizado para URLs limpias
+ */
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private userSubject = new BehaviorSubject<UserData | null>(null);
-  user$ = this.userSubject.asObservable();
 
-  private readonly API_URL = 'http://localhost:3000/api/users/';
+  /**
+   * Signal privado con el usuario autenticado.
+   */
+  private _user = signal<UserData | null>(null);
+
+  /**
+   * Signal público de solo lectura.
+   */
+  user = computed(() => this._user());
 
   constructor(
     private http: HttpClient,
     private tokenService: AuthTokenService
   ) {
-    this.restoreUserFromBackend();
+    this.restoreUserFromToken();
   }
 
   // ============================================================
-  // Cargar usuario real desde backend usando el username del token
+  // Restaurar usuario desde token
   // ============================================================
 
-  private restoreUserFromBackend() {
+  private restoreUserFromToken(): void {
     const username = this.tokenService.getUsernameFromToken();
-    if (!username) return;
-
-    this.loadUserFromBackend(username);
+    if (username) this.loadUserFromBackend(username);
   }
 
   // ============================================================
-  // Obtener usuario desde backend
+  // GET usuario desde backend
   // ============================================================
 
-  getUserFromBackend(username: string): Observable<UserData> {
-    return this.http.get<UserData>(`${this.API_URL}${username}`);
+  private getUserFromBackend(username: string): Observable<UserData> {
+    return this.http.get<UserData>(API.userByUsername(username));
   }
 
-  // ============================================================
-  // Cargar usuario y actualizar estado local
-  // ============================================================
-
-  loadUserFromBackend(username: string) {
+  /**
+   * Carga el usuario desde backend y actualiza el signal global.
+   * Este es el método que usa AuthService.
+   */
+  loadUserFromBackend(username: string): void {
     this.getUserFromBackend(username).subscribe({
-      next: user => this.userSubject.next(user),
-      error: err => console.error('Error cargando usuario', err)
+      next: user => this._user.set(user),
+      error: err => {
+        console.error('🚫 Error cargando usuario', err);
+        this._user.set(null);
+      }
     });
   }
 
   // ============================================================
-  // Obtener usuario actual
+  // SET usuario local (sin password)
   // ============================================================
 
-  getUser(): UserData | null {
-    return this.userSubject.value;
-  }
-
-  // ============================================================
-  // Actualizar usuario localmente (sin password)
-  // ============================================================
-
-  updateLocalUser(user: UserData) {
+  private setLocalUser(user: UserData): void {
     const { password, ...clean } = user;
-    this.userSubject.next({ ...clean });
+    this._user.set(clean);
   }
 
   // ============================================================
-  // Actualizar usuario en backend
+  // UPDATE perfil del usuario autenticado
   // ============================================================
 
-  updateUserByUsername(username: string, data: FormData): Observable<UserData> {
-    return this.http.put<UserData>(`${this.API_URL}${username}`, data);
+  updateUser(username: string, data: FormData): Observable<UserData> {
+    return this.http.put<UserData>(`${API.users}${username}`, data);
   }
 
-  // ============================================================
-  // Actualizar backend + estado local
-  // ============================================================
-
-  syncUserUpdate(username: string, data: FormData) {
-    return this.updateUserByUsername(username, data).subscribe({
-      next: updated => this.updateLocalUser(updated),
-      error: err => console.error('Error actualizando usuario', err)
+  syncUpdateUser(username: string, data: FormData): void {
+    this.updateUser(username, data).subscribe({
+      next: updated => this.setLocalUser(updated),
+      error: err => console.error('🚫 Error actualizando usuario', err)
     });
   }
 
   // ============================================================
-  // Logout
+  // LOGOUT
   // ============================================================
 
-  clearUser() {
-    this.userSubject.next(null);
+  clearUser(): void {
+    this._user.set(null);
     this.tokenService.clearToken();
   }
 }

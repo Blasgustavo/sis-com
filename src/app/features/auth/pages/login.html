@@ -1,88 +1,104 @@
-<!-- Estamos usando Tailwind y DaisyUI-->
 <div class="flex items-center justify-center h-screen">
   <div class="card w-96 bg-base-100 shadow-sm">
     <div class="card-body">
-      <h2 class="text-3xl font-bold text-center">Iniciar Sesion</h2>
+      
+      <h2 class="text-3xl font-bold text-center">Iniciar Sesión</h2>
       <p class="text-sm text-gray-600 text-center">
-        Ingrese sus datos tiene 3 intentos, antes de que el usuario se bloque.
+        Ingrese sus datos. Tiene 3 intentos antes de que el usuario se bloquee.
       </p>
-      <form (ngSubmit)="onLogin()"class="">
+
+      @if (auth.errorMessage()) {
+        <p class="text-center text-red-500 font-semibold mt-2">
+          {{ auth.errorMessage() }}
+        </p>
+      }
+
+      <form (ngSubmit)="onLogin()">
+
+        <!-- Usuario -->
         <div class="flex flex-col">
-          <span class="block text-base font-medium text-gray-700 mb-5 ">Usuario:</span>        
-          <!-- -->
+          <span class="block text-base font-medium text-gray-700 mb-2">Usuario:</span>
+
           <label class="input validator input-primary rounded-sm">
             <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <g
-                stroke-linejoin="round"
-                stroke-linecap="round"
-                stroke-width="2.5"
-                fill="none"
-                stroke="currentColor"
-              >
+              <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </g>
             </svg>
+
             <input
               type="text"
+              name="user"
+              [(ngModel)]="user"
+              placeholder="Usuario"
               required
-              placeholder="Username"
-              pattern="[A-Za-z][A-Za-z0-9\-]*"
               minlength="3"
               maxlength="30"
-              title="Only letters, numbers or dash"
-              [(ngModel)]="user" name="user" placeholder="Usuario" required
+              class="w-full"
             />
           </label>
-          <p class="validator-hint h-1 mb-1 text-center">
-            Ingrese un valor valido.
-          </p>
         </div>
-        <div>
-          <span class="block text-base font-medium text-gray-700 mt-4 mb-5">Contraseña:</span>
-          <!-- -->
+
+        <!-- Contraseña -->
+        <div class="mt-4">
+          <span class="block text-base font-medium text-gray-700 mb-2">Contraseña:</span>
+
           <label class="input validator input-primary rounded-sm">
             <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <g
-                stroke-linejoin="round"
-                stroke-linecap="round"
-                stroke-width="2.5"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path
-                  d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"
-                ></path>
+              <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+                <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
                 <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
               </g>
             </svg>
+
             <input
               type="password"
+              name="password"
+              [(ngModel)]="password"
+              placeholder="Contraseña"
               required
-              placeholder="Password"
               minlength="8"
-              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-              title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
-              [(ngModel)]="password" name="password" placeholder="Contraseña" required
+              class="w-full"
             />
           </label>
-          <p class="validator-hint h-1 m-1 text-center">
-            Ingrese un valor valido.
-          </p>
         </div>
 
+        <!-- Recordar datos -->
         <div class="flex justify-center m-5">
-          <label class="flex gap-3">
-              <span>Recordar Datos</span>
-              <input type="checkbox" id="rememberData" checked class="checkbox checkbox-success" />
-            </label>
+          <label class="flex gap-3 items-center">
+            <span>Recordar Datos</span>
+            <input 
+              type="checkbox" 
+              class="checkbox checkbox-success"
+              [(ngModel)]="remember"
+              name="remember"
+            />
+          </label>
         </div>
+
+        <!-- Botón ingresar -->
         <div class="mb-5">
-          <button type="submit" class="btn btn-primary rounded-sm w-xs ">INGRESAR</button>
+          <button 
+            type="submit" 
+            class="btn btn-primary rounded-sm w-full"
+            [disabled]="auth.isLoading()"
+          >
+            @if (!auth.isLoading()) {
+              <span>INGRESAR</span>
+            } @else {
+              <span>Procesando...</span>
+            }
+          </button>
         </div>
+
+        <!-- Botón limpiar -->
         <div>
-          <button class="btn btn-ghost rounded-sm w-xs" type="reset">limpiar datos ingresados</button>
+          <button class="btn btn-ghost rounded-sm w-full" type="reset">
+            Limpiar datos ingresados
+          </button>
         </div>
+
       </form>
     </div>
   </div>

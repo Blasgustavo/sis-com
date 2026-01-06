@@ -2,14 +2,13 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { UserListService } from '../services/user-list.service';
-import { UserData } from '../services/user.service';
+import { UserData } from '../../../shared/models/user.model';
 
 @Component({
   selector: 'app-list-users',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: '../pages/list-users.html',
-  styleUrls: ['../pages/list-users.css'],
 })
 export class ListUsers implements OnInit {
 
