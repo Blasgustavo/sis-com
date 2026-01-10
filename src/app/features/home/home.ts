@@ -1,23 +1,34 @@
-import { Component, OnInit, signal, computed, effect } from '@angular/core';
+/**
+ * Componente: Home
+ * --------------------------------------------------------------
+ * Vista principal del sistema.
+ *
+ * Responsabilidades:
+ *  - Renderizar la estructura base del sistema (sidebar + contenido).
+ *  - Gestionar navegación interna mediante NavService.
+ *  - Exponer datos del usuario autenticado usando Signals.
+ *  - Controlar el estado visual del menú lateral.
+ *  - Gestionar el tema visual (DaisyUI) mediante Angular Signals.
+ *
+ * Tecnologías modernas aplicadas:
+ *  - Signals → Estado reactivo sin necesidad de RxJS.
+ *  - Computed → Derivación reactiva de datos del usuario.
+ *  - Effect → Sincronización automática con el DOM (tema visual).
+ *  - Standalone Components → Arquitectura moderna Angular.
+ *  - SSR-safe → Protección contra errores en renderizado del servidor.
+ */
+
+import { Component, OnInit, signal, computed, effect, inject } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 
 import { UserService } from '../user/services/user.service';
 import { NavService } from '../../core/service/nav.service';
 import { UserData } from '../../shared/models/user.model';
 
-/**
- * Componente: Home
- *
- * Descripción:
- *  Vista principal del sistema.
- *  Muestra navegación lateral y gestiona rutas internas.
- *  Recupera datos del usuario autenticado desde UserService.
- *
- * Características modernas:
- *  - Signals para estado reactivo
- *  - Computed para nombre y rol
- *  - Navegación desacoplada con NavService
- */
+import { AuthService } from '../../core/service/auth.service';
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -26,45 +37,68 @@ import { UserData } from '../../shared/models/user.model';
   styleUrl: './home.css',
 })
 export class Home implements OnInit {
-  /**
-   * Signal local con el usuario autenticado.
-   * Se actualiza desde el UserService.
-   */
+
+  // ============================================================
+  // Estado del usuario autenticado
+  // ============================================================
+
+  /** Signal que almacena el usuario autenticado. */
   private userSignal = signal<UserData | null>(null);
 
-  /**
-   * Nombre del usuario autenticado.
-   */
+  /** Nombre del usuario autenticado (derivado). */
   userName = computed(() => this.userSignal()?.names ?? '');
 
-  /**
-   * Rol del usuario autenticado.
-   */
+  /** Rol del usuario autenticado (derivado). */
   userRole = computed(() => this.userSignal()?.role ?? '');
+
+  // ============================================================
+  // Tema visual (DaisyUI + Angular Signals)
+  // ============================================================
+
+  /** Signal que controla el tema visual actual. */
+  theme = signal<'light' | 'dark'>('light');
 
   constructor(
     private userService: UserService,
     private nav: NavService,
-    private router: Router
+    private router: Router,
+    private auth: AuthService
   ) {
-    // Reacciona a cambios en el signal global del usuario
+    const platformId = inject(PLATFORM_ID);
+
+    /** Mantiene sincronizado el usuario local con el UserService. */
     effect(() => {
       this.userSignal.set(this.userService.user());
     });
+
+    /** Aplica el tema visual al <html> solo si estamos en el navegador. */
+    effect(() => {
+      if (isPlatformBrowser(platformId)) {
+        document.documentElement.setAttribute('data-theme', this.theme());
+      }
+    });
   }
 
-  ngOnInit(): void {
-    const currentUrl = this.router.url;
-    if (currentUrl === '/home') {
-      setTimeout(() => {
-        this.nav.goHidden('/home/homepage');
-      }, 0);
-    }
+  /**
+   * Cambia el tema según el estado del checkbox.
+   * @param checked - Estado del toggle (true = dark, false = light)
+   */
+  toggleTheme(checked: boolean) {
+    this.theme.set(checked ? 'dark' : 'light');
   }
 
   // ============================================================
   // Navegación principal
   // ============================================================
+
+  ngOnInit(): void {
+    /** Redirección automática si el usuario entra a /home directamente. */
+    if (this.router.url === '/home') {
+      setTimeout(() => {
+        this.nav.goHidden('/home/homepage');
+      }, 0);
+    }
+  }
 
   goHomepage() { this.nav.goHidden('/home/homepage'); }
   goUpdate() { this.nav.goHidden('/home/update'); }
@@ -82,9 +116,11 @@ export class Home implements OnInit {
   // Estado del menú lateral
   // ============================================================
 
+  /** Controla apertura/cierre del menú lateral */
   isOpenMenu = false;
   toggleMenu() { this.isOpenMenu = !this.isOpenMenu; }
 
+  /** Submenús */
   isTdinicio = false;
   tdInicio() { this.isTdinicio = !this.isTdinicio; }
 
@@ -102,4 +138,11 @@ export class Home implements OnInit {
 
   isTdconfi = false;
   tdConfi() { this.isTdconfi = !this.isTdconfi; }
+
+    logout() {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
+
+
 }

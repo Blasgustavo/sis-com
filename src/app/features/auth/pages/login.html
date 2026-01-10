@@ -1,25 +1,31 @@
 <div class="flex items-center justify-center h-screen">
-  <div class="card w-96 bg-base-100 shadow-sm">
+  <div class="shadow-sm card w-96 bg-base-100">
     <div class="card-body">
-      
+
       <h2 class="text-3xl font-bold text-center">Iniciar Sesión</h2>
-      <p class="text-sm text-gray-600 text-center">
+      <p class="text-sm text-center text-gray-600">
         Ingrese sus datos. Tiene 3 intentos antes de que el usuario se bloquee.
       </p>
 
       @if (auth.errorMessage()) {
-        <p class="text-center text-red-500 font-semibold mt-2">
+        <p class="mt-2 font-semibold text-center text-red-500">
           {{ auth.errorMessage() }}
         </p>
       }
 
-      <form (ngSubmit)="onLogin()">
+      <form #f="ngForm" (ngSubmit)="onLogin()">
 
         <!-- Usuario -->
         <div class="flex flex-col">
-          <span class="block text-base font-medium text-gray-700 mb-2">Usuario:</span>
+          <span class="block mb-2 text-base font-medium text-gray-700">Usuario:</span>
 
-          <label class="input validator input-primary rounded-sm">
+          <label
+            class="flex items-center w-full gap-2 rounded-sm input input-bordered"
+            [ngClass]="{
+              'input-primary': userCtrl.valid || !userCtrl.touched,
+              'input-error': userCtrl.invalid && userCtrl.touched
+            }"
+          >
             <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
@@ -31,20 +37,41 @@
               type="text"
               name="user"
               [(ngModel)]="user"
+              #userCtrl="ngModel"
               placeholder="Usuario"
               required
               minlength="3"
               maxlength="30"
-              class="w-full"
+              class="grow"
             />
           </label>
+
+          @if (userCtrl.invalid && userCtrl.touched) {
+            <p class="mt-1 text-sm text-red-500">
+              @if (userCtrl.errors?.['required']) {
+                El usuario es obligatorio.
+              }
+              @if (userCtrl.errors?.['minlength']) {
+                Debe tener al menos 3 caracteres.
+              }
+              @if (userCtrl.errors?.['maxlength']) {
+                Máximo 30 caracteres permitidos.
+              }
+            </p>
+          }
         </div>
 
         <!-- Contraseña -->
         <div class="mt-4">
-          <span class="block text-base font-medium text-gray-700 mb-2">Contraseña:</span>
+          <span class="block mb-2 text-base font-medium text-gray-700">Contraseña:</span>
 
-          <label class="input validator input-primary rounded-sm">
+          <label
+            class="flex items-center w-full gap-2 rounded-sm input input-bordered"
+            [ngClass]="{
+              'input-primary': passCtrl.valid || !passCtrl.touched,
+              'input-error': passCtrl.invalid && passCtrl.touched
+            }"
+          >
             <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
                 <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
@@ -56,17 +83,29 @@
               type="password"
               name="password"
               [(ngModel)]="password"
+              #passCtrl="ngModel"
               placeholder="Contraseña"
               required
-              minlength="8"
-              class="w-full"
+              minlength="4"
+              class="grow"
             />
           </label>
+
+          @if (passCtrl.invalid && passCtrl.touched) {
+            <p class="mt-1 text-sm text-red-500">
+              @if (passCtrl.errors?.['required']) {
+                La contraseña es obligatoria.
+              }
+              @if (passCtrl.errors?.['minlength']) {
+                Debe tener al menos 4 caracteres.
+              }
+            </p>
+          }
         </div>
 
         <!-- Recordar datos -->
         <div class="flex justify-center m-5">
-          <label class="flex gap-3 items-center">
+          <label class="flex items-center gap-3">
             <span>Recordar Datos</span>
             <input 
               type="checkbox" 
@@ -81,8 +120,8 @@
         <div class="mb-5">
           <button 
             type="submit" 
-            class="btn btn-primary rounded-sm w-full"
-            [disabled]="auth.isLoading()"
+            class="w-full rounded-sm btn btn-primary"
+            [disabled]="f.invalid || auth.isLoading()"
           >
             @if (!auth.isLoading()) {
               <span>INGRESAR</span>
@@ -94,7 +133,7 @@
 
         <!-- Botón limpiar -->
         <div>
-          <button class="btn btn-ghost rounded-sm w-full" type="reset">
+          <button class="w-full rounded-sm btn btn-ghost" type="reset">
             Limpiar datos ingresados
           </button>
         </div>

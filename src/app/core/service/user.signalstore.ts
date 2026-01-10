@@ -27,7 +27,7 @@ import { UserData } from '../../shared/models/user.model';
  *  - Computed para exponer datos derivados
  */
 @Injectable({ providedIn: 'root' })
-export class UserStore extends signalStore(
+export class UserSignalStore extends signalStore(
 
   // ============================================================
   // STATE

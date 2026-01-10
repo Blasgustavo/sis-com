@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 import { API } from '../config/api.config';
 import { AuthTokenService } from './auth-token.service';
-import { UserStore } from '../service/user.store';
+import { UserSignalStore } from './user.signalstore';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends signalStore(
@@ -38,7 +38,7 @@ export class AuthService extends signalStore(
   withMethods((store) => {
     const http = inject(HttpClient);
     const tokenService = inject(AuthTokenService);
-    const userStore = inject(UserStore);
+    const userStore = inject(UserSignalStore);
 
     return {
 
